@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package Cloud3D;
+
+service ServiceProvide
+{
+    rpc ModelstoModels (Model) returns (Model) {}
+    rpc ModelstoNumbers (Model) returns (VectorofNumbers) {}
+    rpc MeshtoMesh (OpenMeshModel) returns (OpenMeshModel) {}
+    rpc MeshtoNumbers (OpenMeshModel) returns (VectorofNumbers) {}
+}
+
+service LoadBalance
+{
+    rpc ListServer (ServerRequest) returns (ServerReply) {}
+    rpc SendHeartbeat (HeartBeat) returns (HeartBeatReply) {}
+    rpc EstablishServer (NewServer) returns (Confirmation) {}
+}
+
+message NewServer
+{
+    float version = 1;
+    string serverAddress = 2;
+    repeated string operation = 3;
+}
+
+message Confirmation
+{
+    bool status = 1;
+}
+
+message HeartBeat
+{
+    bool status = 1;
+    uint32 usage = 2;
+    string serverAddresss = 3;
+}
+
+message HeartBeatReply
+{
+    bool status = 1;
+}
+
+message Version
+{
+    uint32 major = 1;
+    uint32 minor = 2;
+}
+
+message ServerRequest
+{
+    uint32 priority = 1;
+    float version = 2;
+    repeated string operation = 3;
+}
+
+message ServerReply
+{
+    string serverAddresss = 1;
+}
+
+message Model
+{
+    string operation = 1;
+    repeated bytes data = 2;
+}
+
+message VectorofNumbers
+{
+    string operation = 1;
+    repeated float point = 2;
+}
+
+message Vertex
+{
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message Face
+{
+    repeated Vertex vertex = 1;
+}
+
+message Mesh
+{
+    repeated Face face = 1;
+}
+
+message OpenMeshModel
+{
+    string operation = 1;
+    repeated Mesh mesh = 2;
+}
