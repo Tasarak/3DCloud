@@ -12,43 +12,56 @@ using Cloud3D::OpenMeshModel;
 
 using grpc::Status;
 using grpc::ClientContext;
-/*
-void CloudClient::UpdateModel(const std::string operation)
+
+void CloudClient::read(const std::string &filename, std::string &data)
 {
-    Model model;
-    model.set_operation(operation);
+    std::ifstream file(filename.c_str(), std::ios::in);
 
-    AsyncClientCall *call = new AsyncClientCall;
-
-    ModelProcessor processor(model);
-    processor.generateCube();
-    processor.prepareModel();
-
-    call->responseReader = stub_->PrepareAsyncModelstoModels(&call->context, model, &cq_);
-    call->responseReader->StartCall();
-    call->responseReader->Finish(&call->updatedModel, &call->status, (void*)call);
-
-    void * got_tag;
-    bool ok = false;
-
-    GPR_ASSERT(cq_.Next(&got_tag, &ok));
-
-    call = static_cast<AsyncClientCall*>(got_tag);
-
-    GPR_ASSERT(ok);
-
-    if (call->status.ok())
+    if (file.is_open())
     {
-        processor.saveModel(call->updatedModel.data(0));
-    }
-    else
-    {
-        std::cout << "RPC failed" << std::endl;
-    }
+        std::stringstream ss;
+        ss << file.rdbuf();
 
-    delete call;
+        file.close();
+
+        data = ss.str();
+    }
 }
-*/
+
+CloudClient::CloudClient(std::string &balancerAddress, std::vector<std::string> services)
+{
+    ProviderFinder finder(balancerAddress);
+
+    std::string providerAddress = finder.GetServer(services);
+    auto channel = grpc::CreateChannel(providerAddress, grpc::InsecureChannelCredentials());
+    stub_ = Cloud3D::ServiceProvide::NewStub(channel);
+}
+
+CloudClient::CloudClient(std::string &balancerAddress,
+                         std::vector<std::string> services,
+                         std::string &certFilename,
+                         std::string &keyFilename,
+                         std::string &rootFilename)
+{
+    ProviderFinder finder(balancerAddress);
+
+    std::string cert;
+    std::string key;
+    std::string root;
+
+    read(certFilename, cert);
+    read(keyFilename, key);
+    read(rootFilename, root);
+
+    grpc::SslCredentialsOptions opts = {root, key, cert};
+
+    auto channel_creds = grpc::SslCredentials(grpc::SslCredentialsOptions(opts));
+
+    std::string providerAddress = finder.GetServer(services);
+    auto channel = grpc::CreateChannel(providerAddress, channel_creds);
+
+    stub_ = Cloud3D::ServiceProvide::NewStub(channel);
+}
 
 int CloudClient::performModelsToModelsOperation(std::string serviceName,
                                                 std::vector<std::string> &outgoingModels,

@@ -17,9 +17,7 @@ using Cloud3D::Confirmation;
 
 BalancerEstablisher::BalancerEstablisher(std::string srvAddress, std::shared_ptr<Channel> channel) :
         stub_(LoadBalance::NewStub(channel)), srvAddress_(srvAddress)
-{
-    EstablishServer();
-}
+{}
 
 int BalancerEstablisher::EstablishServer()
 {

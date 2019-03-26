@@ -55,7 +55,7 @@ target_link_libraries(ServiceProviderTEST ServiceProviderlib)
 set(CloudClientSRC
         client/CloudClient.cpp client/CloudClient.h
         client/ModelProcessor.cpp client/ModelProcessor.h
-        client/ServerGainer.cpp client/ServerGainer.h)
+        client/ProviderFinder.cpp client/ProviderFinder.h)
 
 add_library(CloudClientlib SHARED ${CloudClientSRC} ${PROTO_SRCS} ${GRPC_SRCS})
 

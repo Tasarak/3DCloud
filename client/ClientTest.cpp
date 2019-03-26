@@ -10,10 +10,9 @@ int main(int argc, char *argv[])
     ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
 
     std::vector<std::string> vec{"Service"};
-    ServerGainer gainer(grpc::CreateChannel(argv[1], grpc::InsecureChannelCredentials()));
-    std::string srvAddress = gainer.GetServer(vec);
+    std::string balancerAddress = argv[1];
 
-    CloudClient client(grpc::CreateChannel(srvAddress, grpc::InsecureChannelCredentials()));
+    CloudClient client(balancerAddress, vec);
 /*
     std::vector<std::string> outModels{"Test1", "Test2"};
     std::vector<std::string> incModels;

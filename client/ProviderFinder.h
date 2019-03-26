@@ -10,6 +10,8 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <sstream>
+#include <fstream>
 
 #include <grpcpp/grpcpp.h>
 #include <grpc/support/log.h>
@@ -20,11 +22,10 @@
 
 #include "cloud_services.grpc.pb.h"
 
-class ServerGainer
+class ProviderFinder
 {
 public:
-    ServerGainer(std::shared_ptr<grpc::Channel> channel) :
-    stub_(Cloud3D::LoadBalance::NewStub(channel)) {}
+    ProviderFinder(std::string &balancerAddress);
     std::string GetServer(std::vector<std::string>);
 
 private:

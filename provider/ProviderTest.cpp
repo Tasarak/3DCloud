@@ -7,7 +7,7 @@
 void foo(ModelToModelService *service)
 {
     service->setOutgoingMeshModels(service->getIncomingMeshModels());
-    std::cout << service << "\n";
+    std::cout << service->getName() << "\n";
 }
 
 int main(int argc, char *argv[])
@@ -15,19 +15,12 @@ int main(int argc, char *argv[])
     ::log4cplus::initialize();
     ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
 
-    ServiceProvider* server = new ServiceProvider();
+    ServiceProvider* provider = new ServiceProvider(argv[1], argv[2]);
     std::string serviceName = "Service";
     ModelToModelService service(serviceName, foo);
-    server->setModelsToModelsService(service);
+    provider->setModelsToModelsService(service);
 
-    BalancerEstablisher* balancer;
-    balancer = new BalancerEstablisher(argv[1], grpc::CreateChannel(argv[2],
-                                                                    grpc::InsecureChannelCredentials()));
-    std::thread first(&BalancerEstablisher::SendHeartBeat, balancer);
-    std::thread second(&ServiceProvider::Run, server, argv[1]);
-
-    first.join();
-    second.join();
+    provider->Run();
 
     return 0;
 }

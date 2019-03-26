@@ -18,15 +18,22 @@
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
 #include "cloud_services.grpc.pb.h"
-#include "ServerGainer.h"
+#include "ProviderFinder.h"
 #include "ModelProcessor.h"
 
 class CloudClient
 {
 public:
     typedef OpenMesh::PolyMesh_ArrayKernelT<> CloudMesh;
-    explicit CloudClient(std::shared_ptr<grpc::Channel> channel) :
-            stub_(Cloud3D::ServiceProvide::NewStub(channel)) {}
+
+    CloudClient(std::string &balancerAddress, std::vector<std::string> services);
+
+    CloudClient(std::string &balancerAddress,
+                std::vector<std::string> services,
+                std::string &certFilename,
+                std::string &keyFilename,
+                std::string &rootFilename);
+    ~CloudClient() = default;
     void UpdateModel(std::string);
     int performModelsToModelsOperation(std::string serviceName,
                                        std::vector<std::string> &outgoingModels,
@@ -54,6 +61,7 @@ private:
         std::unique_ptr<grpc::ClientAsyncResponseReader<Cloud3D::Model>> responseReader;
     };
 
+    void read(const std::string &filename, std::string &data);
     std::unique_ptr<Cloud3D::ServiceProvide::Stub> stub_;
     grpc::CompletionQueue cq_;
 };

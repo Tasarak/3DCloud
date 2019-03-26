@@ -4,6 +4,7 @@
 
 #include <cloud_services.grpc.pb.h>
 #include <cloud_services.pb.h>
+
 #include "ServiceProvider.h"
 
 using grpc::Server;
@@ -17,9 +18,48 @@ using Cloud3D::Model;
 using Cloud3D::VectorofNumbers;
 using Cloud3D::ServiceProvide;
 
-ServiceProvider::ServiceProvider()
+void ServiceProvider::read(const std::string &filename, std::string &data)
+{
+    std::ifstream file(filename.c_str(), std::ios::in);
+
+    if (file.is_open())
+    {
+        std::stringstream ss;
+        ss << file.rdbuf();
+
+        file.close();
+
+        data = ss.str();
+    }
+}
+
+ServiceProvider::ServiceProvider(std::string providerAddress, std::string balancerAddress)
 {
     serviceProviderImpl = &ServiceProviderImpl::GetInstance();
+    balancer = new BalancerEstablisher(providerAddress, grpc::CreateChannel(balancerAddress,
+                                                                    grpc::InsecureChannelCredentials()));
+    serverBuilder.AddListeningPort(providerAddress, grpc::InsecureServerCredentials());
+}
+
+ServiceProvider::ServiceProvider(std::string providerAddress,
+                                 std::string balancerAddress,
+                                 std::string &certFilename,
+                                 std::string &keyFilename,
+                                 std::string &rootFilename)
+{
+    serviceProviderImpl = &ServiceProviderImpl::GetInstance();
+    balancer = new BalancerEstablisher(providerAddress, grpc::CreateChannel(balancerAddress,
+                                                                            grpc::InsecureChannelCredentials()));
+    read(certFilename, _cert);
+    read(keyFilename, _key);
+    read(rootFilename, _root);
+
+    grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {_key, _cert};
+
+    sslOps.pem_root_certs = _root;
+    sslOps.pem_key_cert_pairs.push_back ( keycert );
+
+    serverBuilder.AddListeningPort(providerAddress, grpc::SslServerCredentials(sslOps));
 }
 
 ServiceProvider::~ServiceProvider()
@@ -28,18 +68,25 @@ ServiceProvider::~ServiceProvider()
     cq_->Shutdown();
 }
 
-int ServiceProvider::Run(std::string serverAddress)
+void ServiceProvider::StartServer()
 {
-    ServerBuilder serverBuilder;
-    serverBuilder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
+    server_->Wait();
+}
 
+int ServiceProvider::Run()
+{
     serverBuilder.RegisterService(serviceProviderImpl);
 
     server_ = serverBuilder.BuildAndStart();
-    std::cout << "Server listening on " << serverAddress << std::endl;
+
+    balancer->EstablishServer();
 
     //main loop
-    server_->Wait();
+    std::thread first(&BalancerEstablisher::SendHeartBeat, balancer);
+    std::thread second(&ServiceProvider::StartServer, this);
+
+    first.join();
+    second.join();
 
     return 0;
 }
