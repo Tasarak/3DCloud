@@ -20,8 +20,7 @@ using Cloud3D::HeartBeat;
 using Cloud3D::NewServer;
 using Cloud3D::Confirmation;
 
-
-LoadBalanceImpl::LoadBalanceImpl()
+LoadBalanceImpl::LoadBalanceImpl(int &heartBeatRate) : heartBeatRate_(heartBeatRate)
 {
     updater_ = std::thread(&LoadBalanceImpl::UpdateServerList, this);
 }
@@ -104,18 +103,18 @@ void LoadBalanceImpl::UpdateServerList()
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::seconds(2));
-        //RemoveInactiveServer();
+        RemoveInactiveServer();
     }
 }
 
 void LoadBalanceImpl::RemoveInactiveServer()
 {
-   /* std::lock_guard<std::mutex> guard(mutex_);
-    servers.erase(std::remove_if(servers.begin(), servers.end(), [](const ServerNode& server){
+    std::lock_guard<std::mutex> guard(mutex_);
+    servers.erase(std::remove_if(servers.begin(), servers.end(), [this](const ServerNode& server){
         auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - server.lastBeat);
-        return diff.count() > 2500;
+        return diff.count() > heartBeatRate_;
     }), servers.end());
-    */
+
 }
 
 std::string LoadBalanceImpl::FindBestServer(ServerNode sNode)
@@ -123,7 +122,7 @@ std::string LoadBalanceImpl::FindBestServer(ServerNode sNode)
     std::vector<ServerNode> possibleServers;
     for (auto server : servers)
     {
-        if (server.version == sNode.version)
+        if (sNode.version >= server.version)
         {
             int opCounter = 0;
 

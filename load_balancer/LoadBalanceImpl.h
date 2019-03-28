@@ -37,7 +37,7 @@ struct ServerNode
 class LoadBalanceImpl final : public Cloud3D::LoadBalance::Service
 {
 public:
-    explicit LoadBalanceImpl();
+    LoadBalanceImpl(int &heartBeatRate);
     ~LoadBalanceImpl() override;
 
     ::grpc::Status ListServer(::grpc::ServerContext* context,
@@ -60,6 +60,7 @@ private:
     std::vector<ServerNode> servers;
     std::thread updater_;
     std::mutex mutex_;
+    int heartBeatRate_;
 };
 
 

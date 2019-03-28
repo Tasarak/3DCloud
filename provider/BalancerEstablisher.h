@@ -27,7 +27,8 @@
 class BalancerEstablisher
 {
 public:
-    explicit BalancerEstablisher(std::string srvAddress, std::shared_ptr<grpc::Channel> channel);
+    explicit BalancerEstablisher(std::string &srvAddress, std::shared_ptr<grpc::Channel> channel,
+                                 float &version, int &heartBeatRate);
     void SendHeartBeat();
     int EstablishServer();
 
@@ -35,6 +36,8 @@ private:
     void SendBeat();
     std::unique_ptr<Cloud3D::LoadBalance::Stub> stub_;
     std::string srvAddress_;
+    float version_ = 0.0;
+    int heartBeatRate_ = 1000;
 };
 
 

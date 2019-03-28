@@ -13,16 +13,20 @@
 
 #include "BalancerEstablisher.h"
 #include "ServiceProviderImpl.h"
+#include "../Shared/FileParser.h"
 
 class ServiceProvider
 {
 public:
-    ServiceProvider(std::string providerAddress, std::string balancerAddress);
+    ServiceProvider(std::string providerAddress, std::string balancerAddress, float &version, int &heartBeatRate);
     ServiceProvider(std::string providerAddress,
                     std::string balancerAddress,
+                    float &version,
+                    int &heartBeatRate,
                     std::string &certFilename,
                     std::string &keyFilename,
                     std::string &rootFilename);
+    ServiceProvider(std::string &inputFile);
     ~ServiceProvider();
     int Run();
 
@@ -30,8 +34,9 @@ public:
     void setModelsToNumbersService(ModelToNumberService);
 
 private:
-    void read (const std::string& filename, std::string& data);
     void StartServer();
+    void init();
+    void initWithSSL();
     std::unique_ptr<grpc::ServerCompletionQueue> cq_;
     std::unique_ptr<grpc::Server> server_;
     grpc::ServerBuilder serverBuilder;
@@ -40,9 +45,12 @@ private:
     grpc::SslServerCredentialsOptions sslOps;
 
     bool useAuthorization = false;
-    std::string _key;
-    std::string _cert;
-    std::string _root;
+    std::string key_;
+    std::string cert_;
+    std::string root_;
+    std::string providerAddress_, balancerAddress_, certFilename_, keyFilename_, rootFilename_ = "";
+    float version_ = 0.0;
+    int heartBeatRate_ = 1000;
 };
 
 #endif //INC_CLOUD_CLOUD_SERVER_H

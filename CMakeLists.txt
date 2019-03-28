@@ -36,7 +36,7 @@ set(providerSRC
         provider/ModelManager.cpp provider/ModelManager.h
         provider/BalancerEstablisher.cpp provider/BalancerEstablisher.h
         provider/ServiceProviderImpl.cpp provider/ServiceProviderImpl.h
-        provider/Service.cpp provider/Service.h)
+        provider/Service.cpp provider/Service.h Shared/FileParser.cpp Shared/FileParser.h)
 
 add_library(ServiceProviderlib SHARED ${providerSRC} ${PROTO_SRCS} ${GRPC_SRCS})
 
@@ -55,7 +55,7 @@ target_link_libraries(ServiceProviderTEST ServiceProviderlib)
 set(CloudClientSRC
         client/CloudClient.cpp client/CloudClient.h
         client/ModelProcessor.cpp client/ModelProcessor.h
-        client/ProviderFinder.cpp client/ProviderFinder.h)
+        client/ProviderFinder.cpp client/ProviderFinder.h Shared/FileParser.cpp Shared/FileParser.h)
 
 add_library(CloudClientlib SHARED ${CloudClientSRC} ${PROTO_SRCS} ${GRPC_SRCS})
 
@@ -74,7 +74,7 @@ target_link_libraries(CloudClientTEST CloudClientlib)
 # Building LoadBalancer
 set(LoadBalancerSRC
         load_balancer/LoadBalancer.cpp load_balancer/LoadBalancer.h
-        load_balancer/LoadBalanceImpl.cpp load_balancer/LoadBalanceImpl.h)
+        load_balancer/LoadBalanceImpl.cpp load_balancer/LoadBalanceImpl.h Shared/FileParser.cpp Shared/FileParser.h)
 
 add_library(LoadBalancerlib SHARED ${LoadBalancerSRC} ${PROTO_SRCS} ${GRPC_SRCS})
 

@@ -12,7 +12,9 @@ int main(int argc, char *argv[])
     std::vector<std::string> vec{"Service"};
     std::string balancerAddress = std::string(argv[1]);
 
-    CloudClient client(balancerAddress, vec);
+    //CloudClient client(balancerAddress, vec);
+    std::string fileName = "./client/config.txt";
+    CloudClient client(fileName, vec);
 /*
     std::vector<std::string> outModels{"Test1", "Test2"};
     std::vector<std::string> incModels;

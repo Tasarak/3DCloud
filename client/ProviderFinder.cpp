@@ -14,7 +14,7 @@ using Cloud3D::ServerReply;
 using grpc::Channel;
 using grpc::ClientContext;
 
-ProviderFinder::ProviderFinder(std::string &balancerAddress)
+ProviderFinder::ProviderFinder(std::string &balancerAddress, float &version) : version_(version)
 {
     stub_ = Cloud3D::LoadBalance::NewStub(grpc::CreateChannel(balancerAddress, grpc::InsecureChannelCredentials()));
 }
@@ -27,7 +27,7 @@ std::string ProviderFinder::GetServer(std::vector<std::string> operations)
     ServerReply response;
     grpc::ClientContext ctx;
 
-    request.set_version(1.2);
+    request.set_version(version_);
 
     for (const auto &operation : operations)
     {

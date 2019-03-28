@@ -18,48 +18,94 @@ using Cloud3D::Model;
 using Cloud3D::VectorofNumbers;
 using Cloud3D::ServiceProvide;
 
-void ServiceProvider::read(const std::string &filename, std::string &data)
-{
-    std::ifstream file(filename.c_str(), std::ios::in);
-
-    if (file.is_open())
-    {
-        std::stringstream ss;
-        ss << file.rdbuf();
-
-        file.close();
-
-        data = ss.str();
-    }
-}
-
-ServiceProvider::ServiceProvider(std::string providerAddress, std::string balancerAddress)
+void ServiceProvider::init()
 {
     serviceProviderImpl = &ServiceProviderImpl::GetInstance();
-    balancer = new BalancerEstablisher(providerAddress, grpc::CreateChannel(balancerAddress,
-                                                                    grpc::InsecureChannelCredentials()));
-    serverBuilder.AddListeningPort(providerAddress, grpc::InsecureServerCredentials());
+    balancer = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_,
+                                                                            grpc::InsecureChannelCredentials()),
+                                       version_,
+                                       heartBeatRate_);
+    serverBuilder.AddListeningPort(providerAddress_, grpc::InsecureServerCredentials());
+}
+
+void ServiceProvider::initWithSSL()
+{
+    serviceProviderImpl = &ServiceProviderImpl::GetInstance();
+
+    FileParser parser;
+    parser.read(certFilename_, cert_);
+    parser.read(keyFilename_, key_);
+    parser.read(rootFilename_, root_);
+
+    grpc::SslCredentialsOptions opts = {root_, key_, cert_};
+
+    auto channel_creds = grpc::SslCredentials(grpc::SslCredentialsOptions(opts));
+
+    balancer = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_, channel_creds),
+                                       version_, heartBeatRate_);
+
+    grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {key_, cert_};
+
+    sslOps.pem_root_certs = root_;
+    sslOps.pem_key_cert_pairs.push_back ( keycert );
+
+    serverBuilder.AddListeningPort(providerAddress_, grpc::SslServerCredentials(sslOps));
+}
+
+ServiceProvider::ServiceProvider(std::string providerAddress, std::string balancerAddress,
+                                 float &version, int &heartBeatRate)
+                                : providerAddress_(providerAddress), balancerAddress_(balancerAddress),
+                                  version_(version), heartBeatRate_(heartBeatRate)
+{
+    init();
 }
 
 ServiceProvider::ServiceProvider(std::string providerAddress,
                                  std::string balancerAddress,
+                                 float &version,
+                                 int &heartBeatRate,
                                  std::string &certFilename,
                                  std::string &keyFilename,
                                  std::string &rootFilename)
+                                :  providerAddress_(providerAddress),
+                                   balancerAddress_(balancerAddress),
+                                   version_(version),
+                                   heartBeatRate_(heartBeatRate),
+                                   certFilename_(certFilename),
+                                   keyFilename_(keyFilename),
+                                   rootFilename_(rootFilename)
 {
-    serviceProviderImpl = &ServiceProviderImpl::GetInstance();
-    balancer = new BalancerEstablisher(providerAddress, grpc::CreateChannel(balancerAddress,
-                                                                            grpc::InsecureChannelCredentials()));
-    read(certFilename, _cert);
-    read(keyFilename, _key);
-    read(rootFilename, _root);
+    initWithSSL();
+}
 
-    grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {_key, _cert};
+ServiceProvider::ServiceProvider(std::string &inputFile)
+{
+    FileParser parser;
+    try
+    {
+        parser.parseProviderConfig(inputFile, providerAddress_, balancerAddress_, 
+                                   heartBeatRate_, version_, 
+                                   certFilename_, keyFilename_, rootFilename_);
+    }
+    catch (...)
+    {
+        throw;
+    }
 
-    sslOps.pem_root_certs = _root;
-    sslOps.pem_key_cert_pairs.push_back ( keycert );
+    if (balancerAddress_.empty() || providerAddress_.empty())
+    {
+        throw std::invalid_argument("Address of Load Balancer or Service Provider not defined in config.");
+    }
 
-    serverBuilder.AddListeningPort(providerAddress, grpc::SslServerCredentials(sslOps));
+    if (!certFilename_.empty() && !keyFilename_.empty() && !rootFilename_.empty())
+    {
+        initWithSSL();
+    }
+    else
+    {
+        init();
+    }
+
 }
 
 ServiceProvider::~ServiceProvider()

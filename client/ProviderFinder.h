@@ -25,11 +25,12 @@
 class ProviderFinder
 {
 public:
-    ProviderFinder(std::string &balancerAddress);
+    ProviderFinder(std::string &balancerAddress, float &version);
     std::string GetServer(std::vector<std::string>);
 
 private:
     std::unique_ptr<Cloud3D::LoadBalance::Stub> stub_;
+    float version_;
 };
 
 

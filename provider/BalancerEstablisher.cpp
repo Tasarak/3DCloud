@@ -15,8 +15,13 @@ using Cloud3D::HeartBeatReply;
 using Cloud3D::NewServer;
 using Cloud3D::Confirmation;
 
-BalancerEstablisher::BalancerEstablisher(std::string srvAddress, std::shared_ptr<Channel> channel) :
-        stub_(LoadBalance::NewStub(channel)), srvAddress_(srvAddress)
+BalancerEstablisher::BalancerEstablisher(std::string &srvAddress, std::shared_ptr<Channel> channel,
+                                         float &version, int &heartBeatRate)
+                                        :
+                                        stub_(LoadBalance::NewStub(channel)),
+                                        srvAddress_(srvAddress),
+                                        version_(version),
+                                        heartBeatRate_(heartBeatRate)
 {}
 
 int BalancerEstablisher::EstablishServer()
@@ -26,7 +31,7 @@ int BalancerEstablisher::EstablishServer()
     ClientContext ctx;
 
     server.set_serveraddress(srvAddress_);
-    server.set_version(1.2);
+    server.set_version(version_);
 
     ServiceProviderImpl *provider = &ServiceProviderImpl::GetInstance();
 
@@ -50,7 +55,7 @@ void BalancerEstablisher::SendHeartBeat()
 {
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(heartBeatRate_));
         SendBeat();
     }
 }

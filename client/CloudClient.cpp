@@ -13,54 +13,90 @@ using Cloud3D::OpenMeshModel;
 using grpc::Status;
 using grpc::ClientContext;
 
-void CloudClient::read(const std::string &filename, std::string &data)
+void CloudClient::init()
 {
-    std::ifstream file(filename.c_str(), std::ios::in);
+    ProviderFinder finder(balancerAddress_, minVersion_);
 
-    if (file.is_open())
-    {
-        std::stringstream ss;
-        ss << file.rdbuf();
-
-        file.close();
-
-        data = ss.str();
-    }
-}
-
-CloudClient::CloudClient(std::string &balancerAddress, std::vector<std::string> services)
-{
-    ProviderFinder finder(balancerAddress);
-
-    std::string providerAddress = finder.GetServer(services);
+    std::string providerAddress = finder.GetServer(services_);
     auto channel = grpc::CreateChannel(providerAddress, grpc::InsecureChannelCredentials());
     stub_ = Cloud3D::ServiceProvide::NewStub(channel);
 }
 
-CloudClient::CloudClient(std::string &balancerAddress,
-                         std::vector<std::string> services,
-                         std::string &certFilename,
-                         std::string &keyFilename,
-                         std::string &rootFilename)
+void CloudClient::initWithSSL()
 {
-    ProviderFinder finder(balancerAddress);
+    ProviderFinder finder(balancerAddress_, minVersion_);
 
     std::string cert;
     std::string key;
     std::string root;
 
-    read(certFilename, cert);
-    read(keyFilename, key);
-    read(rootFilename, root);
+    FileParser parser;
+
+    parser.read(certFilename_, cert);
+    parser.read(keyFilename_, key);
+    parser.read(rootFilename_, root);
 
     grpc::SslCredentialsOptions opts = {root, key, cert};
 
     auto channel_creds = grpc::SslCredentials(grpc::SslCredentialsOptions(opts));
 
-    std::string providerAddress = finder.GetServer(services);
+    std::string providerAddress = finder.GetServer(services_);
     auto channel = grpc::CreateChannel(providerAddress, channel_creds);
 
     stub_ = Cloud3D::ServiceProvide::NewStub(channel);
+}
+
+CloudClient::CloudClient(std::string &balancerAddress, float &minVersion, std::vector<std::string> &services)
+                        : balancerAddress_(balancerAddress),
+                          minVersion_(minVersion),
+                          services_(services)
+{
+    init();
+}
+
+CloudClient::CloudClient(std::string &balancerAddress,
+                         float &minVersion,
+                         std::vector<std::string> &services,
+                         std::string &certFilename,
+                         std::string &keyFilename,
+                         std::string &rootFilename)
+                    :    balancerAddress_(balancerAddress),
+                         minVersion_(minVersion),
+                         services_(services),
+                         certFilename_(certFilename),
+                         keyFilename_(keyFilename),
+                         rootFilename_(rootFilename)
+{
+    initWithSSL();
+}
+
+CloudClient::CloudClient(std::string &configFile, std::vector<std::string> &services)
+                        : services_(services)
+{
+    FileParser parser;
+
+    try
+    {
+        parser.parseClientConfig(configFile, balancerAddress_, minVersion_, certFilename_, keyFilename_, rootFilename_);
+    }
+    catch (...)
+    {
+        throw;
+    }
+
+    if (balancerAddress_.empty())
+    {
+        throw std::invalid_argument("Address of LoadBalancer not defined in config.");
+    }
+
+    if (!certFilename_.empty() && !keyFilename_.empty() && !rootFilename_.empty())
+    {
+        initWithSSL();
+    }
+    else
+    {
+        init();
+    }
 }
 
 int CloudClient::performModelsToModelsOperation(std::string serviceName,
