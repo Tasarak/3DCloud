@@ -20,9 +20,9 @@ class ModelManager
 {
 public:
     typedef OpenMesh::PolyMesh_ArrayKernelT<>  CloudMesh;
-    ModelManager(){};
-    int serializeModel(Cloud3D::OpenMeshModel &model, CloudMesh &mesh);
-    int deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
+    ModelManager() = default;
+    void serializeModel(Cloud3D::OpenMeshModel &model, CloudMesh &mesh);
+    void deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
 };
 
 

@@ -155,6 +155,7 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
             CloudMesh mesh;
             modelProcessor.deserializeModel(mesh, model);
             incomingModels.push_back(mesh);
+            modelProcessor.saveModel(mesh);
         }
 
         std::cout << "MeshtoMesh Successful\n";

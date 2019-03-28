@@ -90,20 +90,14 @@ ModelProcessor::CloudMesh ModelProcessor::generateCube()
     return mesh;
 
 }
-/*
-int ModelProcessor::saveModel(const std::string &data)
+
+int ModelProcessor::saveModel(ModelProcessor::CloudMesh &mesh)
 {
     try
     {
-        std::istringstream stream(data);
         OpenMesh::IO::Options opt = OpenMesh::IO::Options::Default;
 
-        if (!OpenMesh::IO::read_mesh(mesh_, stream, ".OFF", opt, true))
-        {
-            std::cerr << "Cannot read mesh_ to stream" << std::endl;
-        }
-
-        if (!OpenMesh::IO::write_mesh(mesh_, "output.obj"))
+        if (!OpenMesh::IO::write_mesh(mesh, "output.obj"))
         {
             std::cerr << "Cannot write mesh_ to stream" << std::endl;
         }
@@ -111,14 +105,25 @@ int ModelProcessor::saveModel(const std::string &data)
     catch( std::exception& x )
     {
         std::cerr << x.what() << std::endl;
-        LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("") << x.what());
+       // LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("") << x.what());
     }
 }
- */
 
-int ModelProcessor::serializeModel(Cloud3D::OpenMeshModel &model, ModelProcessor::CloudMesh &mesh)
+void ModelProcessor::serializeModel(Cloud3D::OpenMeshModel &model, ModelProcessor::CloudMesh &mesh)
 {
     Cloud3D::Mesh* meshModel = model.add_mesh();
+
+    for (CloudMesh::VertexIter v_it=mesh.vertices_begin(); v_it!=mesh.vertices_end(); ++v_it)
+    {
+        Cloud3D::Vertex *vertex = meshModel->add_vertex();
+        vertex->set_index(u_int32_t (v_it->idx()));
+
+        CloudMesh::Point point = mesh.point(v_it);
+
+        vertex->set_x(point[0]);
+        vertex->set_y(point[1]);
+        vertex->set_z(point[2]);
+    }
 
     for (CloudMesh::FaceIter f_it=mesh.faces_begin(); f_it!=mesh.faces_end(); ++f_it)
     {
@@ -126,33 +131,30 @@ int ModelProcessor::serializeModel(Cloud3D::OpenMeshModel &model, ModelProcessor
 
         for (CloudMesh::FaceVertexIter fv_it=mesh.fv_iter(*f_it); fv_it.is_valid(); ++fv_it)
         {
-            CloudMesh::Point point = mesh.point(fv_it);
-
-            Cloud3D::Vertex* vertex = face->add_vertex();
-
-            vertex->set_x(point[0]);
-            vertex->set_y(point[1]);
-            vertex->set_z(point[2]);
+            face->add_index(u_int32_t (fv_it->idx()));
         }
     }
-
-    return 0;
 }
 
-int ModelProcessor::deserializeModel(ModelProcessor::CloudMesh &mesh,
+void ModelProcessor::deserializeModel(ModelProcessor::CloudMesh &mesh,
                                      Cloud3D::Mesh &model)
 {
     std::vector<CloudMesh::VertexHandle> vhandle;
+    std::vector<Cloud3D::Vertex> verticies;
 
-    for (auto face : model.face())
+    for (const auto &vertex : model.vertex())
+    {
+        verticies.push_back(vertex);
+    }
+
+    for (const Cloud3D::Face &face : model.face())
     {
         vhandle.clear();
-
-        for (auto vertex : face.vertex())
+        for (auto index : face.index())
         {
-            vhandle.push_back(mesh.add_vertex(CloudMesh::Point(vertex.x(), vertex.y(), vertex.z())));
+            CloudMesh::Point vertex = CloudMesh::Point(verticies[index].x(), verticies[index].y(), verticies[index].z());
+            vhandle.push_back(mesh.add_vertex(vertex));
         }
-
         mesh.add_face(vhandle);
     }
 }

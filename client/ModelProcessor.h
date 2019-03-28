@@ -43,9 +43,10 @@ private:
      */
     typedef OpenMesh::PolyMesh_ArrayKernelT<> CloudMesh;
 
-    ModelProcessor(){};
-    int serializeModel(Cloud3D::OpenMeshModel &model, CloudMesh &mesh);
-    int deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
+    ModelProcessor() = default;
+    void serializeModel(Cloud3D::OpenMeshModel &model, CloudMesh &mesh);
+    void deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
+    int saveModel(ModelProcessor::CloudMesh &mesh);
     ModelProcessor::CloudMesh generateCube();
 };
 

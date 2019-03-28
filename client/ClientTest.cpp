@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
 
     std::vector<std::string> vec{"Service"};
-    std::string balancerAddress = argv[1];
+    std::string balancerAddress = std::string(argv[1]);
 
     CloudClient client(balancerAddress, vec);
 /*
