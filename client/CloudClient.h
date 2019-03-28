@@ -55,6 +55,8 @@ public:
                                         std::vector<CloudMesh> &outgoingModels,
                                         std::vector<float> &incomingNumbers);
     ModelProcessor::CloudMesh generateCube();
+    void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
+    void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 
 private:
     struct AsyncClientCall

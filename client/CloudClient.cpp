@@ -191,7 +191,6 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
             CloudMesh mesh;
             modelProcessor.deserializeModel(mesh, model);
             incomingModels.push_back(mesh);
-            modelProcessor.saveModel(mesh);
         }
 
         std::cout << "MeshtoMesh Successful\n";
@@ -244,4 +243,30 @@ ModelProcessor::CloudMesh CloudClient::generateCube()
 {
     ModelProcessor processor;
     return processor.generateCube();
+}
+
+void CloudClient::saveMeshToFile(std::string file, CloudClient::CloudMesh &loadedMesh)
+{
+    ModelProcessor processor;
+    try
+    {
+        processor.saveModel(loadedMesh, file);
+    }
+    catch (...)
+    {
+        throw;
+    }
+}
+
+void CloudClient::loadMeshFromFile(std::string file, CloudClient::CloudMesh &loadedMesh)
+{
+    ModelProcessor processor;
+    try
+    {
+        processor.loadModel(loadedMesh, file);
+    }
+    catch (...)
+    {
+        throw;
+    }
 }

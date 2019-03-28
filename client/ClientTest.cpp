@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     ::log4cplus::initialize();
     ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
 
-    std::vector<std::string> vec{"Service"};
+    std::vector<std::string> vec{"MeshSmooth"};
     std::string balancerAddress = std::string(argv[1]);
 
     //CloudClient client(balancerAddress, vec);
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     mesh.push_back(client.generateCube());
     mesh.push_back(client.generateCube());
     std::vector<CloudClient::CloudMesh> cloudMesh;
-    client.performModelsToModelsOperation("Service", mesh, cloudMesh);
+    client.performModelsToModelsOperation("MeshSmooth", mesh, cloudMesh);
 
     return 0;
 }

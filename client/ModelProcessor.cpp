@@ -5,35 +5,6 @@
 
 #include "ModelProcessor.h"
 
-/*
-int ModelProcessor::prepareModel()
-{
-    // write mesh to output.obj
-    try
-    {
-        std::ostringstream stream;
-        if (!OpenMesh::IO::write_mesh(mesh_, stream, ".OFF", OpenMesh::IO::Options::Default))
-        {
-            std::cerr << "Cannot write mesh to stream" << std::endl;
-            LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("Cannot write mesh to stream"));
-            return 1;
-        }
-        else
-        {
-            model_.add_data(stream.str());
-        }
-    }
-    catch( std::exception& x )
-    {
-        std::cerr << x.what() << std::endl;
-        LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("") << x.what());
-        return 1;
-    }
-    return 0;
-}
-*/
-
-
 ModelProcessor::CloudMesh ModelProcessor::generateCube()
 {
     CloudMesh mesh;
@@ -91,13 +62,13 @@ ModelProcessor::CloudMesh ModelProcessor::generateCube()
 
 }
 
-int ModelProcessor::saveModel(ModelProcessor::CloudMesh &mesh)
+void ModelProcessor::saveModel(ModelProcessor::CloudMesh &mesh, std::string &outputFile)
 {
     try
     {
         OpenMesh::IO::Options opt = OpenMesh::IO::Options::Default;
 
-        if (!OpenMesh::IO::write_mesh(mesh, "output.obj"))
+        if (!OpenMesh::IO::write_mesh(mesh, outputFile))
         {
             std::cerr << "Cannot write mesh_ to stream" << std::endl;
         }
@@ -107,6 +78,19 @@ int ModelProcessor::saveModel(ModelProcessor::CloudMesh &mesh)
         std::cerr << x.what() << std::endl;
        // LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("") << x.what());
     }
+}
+
+void ModelProcessor::loadModel(ModelProcessor::CloudMesh &mesh, std::string &inputFile)
+{
+    try
+    {
+        OpenMesh::IO::read_mesh(mesh, inputFile);
+    }
+    catch (std::exception& x)
+    {
+        throw;
+    }
+
 }
 
 void ModelProcessor::serializeModel(Cloud3D::OpenMeshModel &model, ModelProcessor::CloudMesh &mesh)

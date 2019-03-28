@@ -46,7 +46,8 @@ private:
     ModelProcessor() = default;
     void serializeModel(Cloud3D::OpenMeshModel &model, CloudMesh &mesh);
     void deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
-    int saveModel(ModelProcessor::CloudMesh &mesh);
+    void saveModel(ModelProcessor::CloudMesh &mesh, std::string &outputFile);
+    void loadModel(ModelProcessor::CloudMesh &mesh, std::string &inputFile);
     ModelProcessor::CloudMesh generateCube();
 };
 
