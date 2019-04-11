@@ -155,6 +155,7 @@ std::string LoadBalanceImpl::MinUsageServer(std::vector<ServerNode> possibleServ
 
     int minUsage = possibleServers.front().usage;
     std::string minUsageAddress = possibleServers.front().address;
+    std::vector<ServerNode> sameUsageProviders;
 
     for (auto server : possibleServers)
     {
@@ -162,9 +163,28 @@ std::string LoadBalanceImpl::MinUsageServer(std::vector<ServerNode> possibleServ
         {
             minUsage = server.usage;
             minUsageAddress = server.address;
+
+            sameUsageProviders.clear();
+            sameUsageProviders.push_back(server);
+        }
+        else if (server.usage == minUsage)
+        {
+            sameUsageProviders.push_back(server);
         }
     }
 
-    return minUsageAddress;
+    if (sameUsageProviders.size() > 1)
+    {
+        std::random_device random_device;
+        std::mt19937 engine{random_device()};
+        std::uniform_int_distribution<int> dist(0, (int)sameUsageProviders.size() - 1);
+        ServerNode random_element = sameUsageProviders[dist(engine)];
+
+        return random_element.address;
+    }
+    else
+    {
+        return minUsageAddress;
+    }
 }
 

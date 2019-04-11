@@ -19,8 +19,8 @@
 
 #include "cloud_services.grpc.pb.h"
 #include "ProviderFinder.h"
-#include "ModelProcessor.h"
-#include "../Shared/FileParser.h"
+#include "Shared/ModelProcessor.h"
+#include "Shared/FileParser.h"
 
 class CloudClient
 {
@@ -38,7 +38,6 @@ public:
 
     CloudClient(std::string &configFile, std::vector<std::string> &services);
     ~CloudClient() = default;
-    void UpdateModel(std::string);
     int performModelsToModelsOperation(std::string serviceName,
                                        std::vector<std::string> &outgoingModels,
                                        std::vector<std::string> &incomingModels);
@@ -54,7 +53,6 @@ public:
     int performModelsToNumbersOperation(std::string serviceName,
                                         std::vector<CloudMesh> &outgoingModels,
                                         std::vector<float> &incomingNumbers);
-    ModelProcessor::CloudMesh generateCube();
     void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
     void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 

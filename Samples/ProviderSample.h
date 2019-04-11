@@ -6,7 +6,8 @@
 #define INC_3DCLOUD_PROVIDERTEST_H
 
 #include <OpenMesh/Tools/Smoother/JacobiLaplaceSmootherT.hh>
+#include <random>
 
-#include "ServiceProvider.h"
+#include "provider/ServiceProvider.h"
 
 #endif //INC_3DCLOUD_PROVIDERTEST_H

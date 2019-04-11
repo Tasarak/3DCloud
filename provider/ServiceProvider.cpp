@@ -122,6 +122,7 @@ void ServiceProvider::StartServer()
 int ServiceProvider::Run()
 {
     serverBuilder.RegisterService(serviceProviderImpl);
+    serverBuilder.SetMaxReceiveMessageSize(-1);
 
     server_ = serverBuilder.BuildAndStart();
 
@@ -163,4 +164,9 @@ void ServiceProvider::setModelsToNumbersService(ModelToNumberService newService)
 
     serviceProviderImpl->ModelToNumbersServices.push_back(newService);
     serviceProviderImpl->ListOfServiceNames.push_back(newService.getName());
+}
+
+void ServiceProvider::setUsageFunction(void (*fp)(int &))
+{
+    balancer->setUsageFunction(fp);
 }

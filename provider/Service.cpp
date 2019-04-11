@@ -9,7 +9,7 @@ const std::vector<std::string> &Service::getIncomingModels() const
     return incomingModels;
 }
 
-const std::vector<ModelManager::CloudMesh> &Service::getIncomingMeshModels() const
+const std::vector<ModelProcessor::CloudMesh> &Service::getIncomingMeshModels() const
 {
     return incomingMeshModels;
 }
@@ -24,7 +24,7 @@ const std::string &Service::getName() const
     return name;
 }
 
-void ModelToModelService::setOutgoingMeshModels(const std::vector<ModelManager::CloudMesh> &outgoingMeshModels)
+void ModelToModelService::setOutgoingMeshModels(const std::vector<ModelProcessor::CloudMesh> &outgoingMeshModels)
 {
     ModelToModelService::outgoingMeshModels = outgoingMeshModels;
 }

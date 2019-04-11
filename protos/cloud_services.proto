@@ -5,9 +5,13 @@ package Cloud3D;
 service ServiceProvide
 {
     rpc ModelstoModels (Model) returns (Model) {}
+    rpc StreamModelstoModels (stream Model) returns (stream Model) {}
     rpc ModelstoNumbers (Model) returns (VectorofNumbers) {}
+    rpc StreamModelstoNumbers (stream Model) returns (VectorofNumbers) {}
     rpc MeshtoMesh (OpenMeshModel) returns (OpenMeshModel) {}
+    rpc StreamMeshtoMesh (stream OpenMeshModel) returns (stream OpenMeshModel) {}
     rpc MeshtoNumbers (OpenMeshModel) returns (VectorofNumbers) {}
+    rpc StreamMeshtoNumbers (stream OpenMeshModel) returns (VectorofNumbers) {}
 }
 
 service LoadBalance
@@ -70,7 +74,6 @@ message Vertex
     double x = 1;
     double y = 2;
     double z = 3;
-    uint32 index = 4;
 }
 
 message Face

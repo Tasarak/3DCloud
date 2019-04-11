@@ -23,24 +23,6 @@
 class ModelProcessor
 {
 public:
-    /*
-    explicit ModelProcessor(Cloud3D::Model &model) :
-            model_(model)
-    {
-        logger.getInstance(LOG4CPLUS_TEXT("ModelProcessor"));
-    };
-    int prepareModel();
-    ModelProcessor::CloudMesh generateCube();
-    int saveModel(const std::string &data);
-
-private:
-    Cloud3D::Model & model_;
-    std::string data_;
-    OpenMesh::PolyMesh_ArrayKernelT<> mesh_;
-    typedef OpenMesh::PolyMesh_ArrayKernelT<>  CloudMesh;
-    typedef OpenMesh::TriMesh_ArrayKernelT<> MyTriMesh;
-    log4cplus::Logger logger;
-     */
     typedef OpenMesh::PolyMesh_ArrayKernelT<> CloudMesh;
 
     ModelProcessor() = default;
@@ -48,7 +30,6 @@ private:
     void deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
     void saveModel(ModelProcessor::CloudMesh &mesh, std::string &outputFile);
     void loadModel(ModelProcessor::CloudMesh &mesh, std::string &inputFile);
-    ModelProcessor::CloudMesh generateCube();
 };
 
 

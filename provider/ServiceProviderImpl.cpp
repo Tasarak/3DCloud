@@ -61,8 +61,8 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                                                const ::Cloud3D::OpenMeshModel *request,
                                                ::Cloud3D::OpenMeshModel *response)
 {
-    ModelManager modelManager;
-    ModelManager::CloudMesh mesh;
+    ModelProcessor modelManager;
+    ModelProcessor::CloudMesh mesh;
     for (auto service : ModelsToModelsServices)
     {
         if (request->operation() == service.name)
@@ -88,5 +88,59 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                                                   const ::Cloud3D::OpenMeshModel *request,
                                                   ::Cloud3D::VectorofNumbers *response)
 {
-    return ::grpc::Status::OK;
+    ModelProcessor modelManager;
+    ModelProcessor::CloudMesh mesh;
+    for (auto service : ModelToNumbersServices)
+    {
+        if (request->operation() == service.name)
+        {
+            for (auto model : request->mesh())
+            {
+                mesh.clear();
+                modelManager.deserializeModel(mesh, model);
+                service.incomingMeshModels.push_back(mesh);
+            }
+            service.fp(&service);
+            for (auto number : service.outgoingVector)
+            {
+                response->add_point(number);
+            }
+            return ::grpc::Status::OK;
+        }
+    }
+    return ::grpc::Status::CANCELLED;
+}
+
+::grpc::Status ServiceProviderImpl::StreamMeshtoMesh(::grpc::ServerContext *context,
+                                                     ::grpc::ServerReaderWriter<::Cloud3D::OpenMeshModel, ::Cloud3D::OpenMeshModel> *stream)
+{
+    ModelProcessor modelManager;
+    ModelProcessor::CloudMesh mesh;
+    Cloud3D::OpenMeshModel model, outModel;
+
+    while (stream->Read(&model))
+    {
+        for (auto service : ModelsToModelsServices)
+        {
+
+            if (model.operation() == service.name)
+            {
+                for (auto model : model.mesh())
+                {
+                    mesh.clear();
+                    modelManager.deserializeModel(mesh, model);
+                    service.incomingMeshModels.push_back(mesh);
+                }
+                service.fp(&service);
+                for (auto meshOut : service.outgoingMeshModels)
+                {
+                    modelManager.serializeModel(outModel, meshOut);
+                    stream->Write(outModel);
+                }
+                return ::grpc::Status::OK;
+            }
+        }
+        return ::grpc::Status::CANCELLED;
+    }
+
 }

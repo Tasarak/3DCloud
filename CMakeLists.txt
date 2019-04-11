@@ -33,10 +33,11 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 # Building provider
 set(providerSRC
         provider/ServiceProvider.cpp provider/ServiceProvider.h
-        provider/ModelManager.cpp provider/ModelManager.h
         provider/BalancerEstablisher.cpp provider/BalancerEstablisher.h
         provider/ServiceProviderImpl.cpp provider/ServiceProviderImpl.h
-        provider/Service.cpp provider/Service.h Shared/FileParser.cpp Shared/FileParser.h)
+        provider/Service.cpp provider/Service.h
+        Shared/ModelProcessor.cpp Shared/ModelProcessor.h
+        Shared/FileParser.cpp Shared/FileParser.h)
 
 add_library(ServiceProviderlib SHARED ${providerSRC} ${PROTO_SRCS} ${GRPC_SRCS})
 
@@ -47,14 +48,14 @@ target_link_libraries(ServiceProviderlib
         OpenMeshTools
         log4cplus)
 
-add_executable(ServiceProviderTEST provider/ProviderTest.cpp provider/ProviderTest.h)
+add_executable(ProviderSample Samples/ProviderSample.cpp Samples/ProviderSample.h)
 
-target_link_libraries(ServiceProviderTEST ServiceProviderlib)
+target_link_libraries(ProviderSample ServiceProviderlib)
 
 # Building client
 set(CloudClientSRC
         client/CloudClient.cpp client/CloudClient.h
-        client/ModelProcessor.cpp client/ModelProcessor.h
+        Shared/ModelProcessor.cpp Shared/ModelProcessor.h
         client/ProviderFinder.cpp client/ProviderFinder.h Shared/FileParser.cpp Shared/FileParser.h)
 
 add_library(CloudClientlib SHARED ${CloudClientSRC} ${PROTO_SRCS} ${GRPC_SRCS})
@@ -67,9 +68,9 @@ target_link_libraries(CloudClientlib
         log4cplus
         )
 
-add_executable(CloudClientTEST client/ClientTest.cpp client/ClientTest.h)
+add_executable(ClientSample Samples/ClientSample.cpp Samples/ClientSample.h)
 
-target_link_libraries(CloudClientTEST CloudClientlib)
+target_link_libraries(ClientSample CloudClientlib)
 
 # Building LoadBalancer
 set(LoadBalancerSRC
@@ -84,7 +85,6 @@ target_link_libraries(LoadBalancerlib
         log4cplus
         )
 
-add_executable(LoadBalancerTEST
-        load_balancer/BalancerTest.cpp load_balancer/BalancerTest.h)
+add_executable(BalancerSample Samples/BalancerSample.cpp Samples/BalancerSample.h)
 
-target_link_libraries(LoadBalancerTEST LoadBalancerlib)
+target_link_libraries(BalancerSample LoadBalancerlib)

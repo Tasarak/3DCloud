@@ -56,6 +56,7 @@ void BalancerEstablisher::SendHeartBeat()
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(heartBeatRate_));
+        CountUsage();
         SendBeat();
     }
 }
@@ -66,7 +67,7 @@ void BalancerEstablisher::SendBeat()
     HeartBeatReply reply;
     ClientContext context;
     beat.set_status(true);
-    beat.set_usage(35);
+    beat.set_usage(usage_);
     beat.set_serveraddresss(srvAddress_);
 
     Status status = stub_->SendHeartbeat(&context, beat, &reply);
@@ -80,4 +81,18 @@ void BalancerEstablisher::SendBeat()
             std::cout << "Trying to Establish provider" << std::endl;
         }
     }
+}
+
+void BalancerEstablisher::CountUsage()
+{
+    if (isUsageSet)
+    {
+        fp_(usage_);
+    }
+}
+
+void BalancerEstablisher::setUsageFunction(void (*fp)(int &))
+{
+    fp_ = fp;
+    isUsageSet = true;
 }

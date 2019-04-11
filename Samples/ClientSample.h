@@ -5,6 +5,6 @@
 #ifndef INC_3DCLOUD_TEST_H
 #define INC_3DCLOUD_TEST_H
 
-#include "CloudClient.h"
+#include "client/CloudClient.h"
 
 #endif //INC_3DCLOUD_TEST_H

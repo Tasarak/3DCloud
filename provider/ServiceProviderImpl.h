@@ -51,6 +51,18 @@ private:
     ::grpc::Status MeshtoNumbers(::grpc::ServerContext* context,
                                  const ::Cloud3D::OpenMeshModel* request,
                                  ::Cloud3D::VectorofNumbers* response) override;
+    /*
+    ::grpc::Status StreamModelstoModels(::grpc::ServerContext *context,
+                                        ::grpc::ServerReaderWriter<::Cloud3D::Model, ::Cloud3D::Model> *stream) override;
+    ::grpc::Status StreamModelstoNumbers(::grpc::ServerContext *context,
+                                         ::grpc::ServerReader<::Cloud3D::Model> *reader,
+                                         ::Cloud3D::VectorofNumbers *response) override;
+    ::grpc::Status StreamMeshtoNumbers(::grpc::ServerContext *context,
+                                       ::grpc::ServerReader<::Cloud3D::OpenMeshModel> *reader,
+                                       ::Cloud3D::VectorofNumbers *response) override;
+                                       */
+    ::grpc::Status StreamMeshtoMesh(::grpc::ServerContext *context,
+                                    ::grpc::ServerReaderWriter<::Cloud3D::OpenMeshModel, ::Cloud3D::OpenMeshModel> *stream) override;
 };
 
 

@@ -8,16 +8,17 @@
 #include <iostream>
 #include <string>
 
-#include "ModelManager.h"
+#include "Shared/ModelProcessor.h"
 
 class Service
 {
 public:
 
     const std::vector<std::string> &getIncomingModels() const;
-    const std::vector<ModelManager::CloudMesh> &getIncomingMeshModels() const;
+    const std::vector<ModelProcessor::CloudMesh> &getIncomingMeshModels() const;
     void setOutgoingModels(const std::vector<std::string> &outgoingModels);
     const std::string &getName() const;
+
 
 protected:
     Service() = default;
@@ -27,7 +28,7 @@ protected:
 
     std::vector<std::string> incomingModels;
     std::vector<std::string> outgoingModels;
-    std::vector<ModelManager::CloudMesh> incomingMeshModels;
+    std::vector<ModelProcessor::CloudMesh> incomingMeshModels;
 };
 
 class ModelToModelService : public Service
@@ -36,11 +37,11 @@ public:
     ModelToModelService(std::string &name_, void (*fp)(ModelToModelService *input))
     : fp(fp) {name = name_;}
 
-    void setOutgoingMeshModels(const std::vector<ModelManager::CloudMesh> &outgoingMeshModels);
+    void setOutgoingMeshModels(const std::vector<ModelProcessor::CloudMesh> &outgoingMeshModels);
 
 private:
     void (*fp)(ModelToModelService *input);
-    std::vector<ModelManager::CloudMesh> outgoingMeshModels;
+    std::vector<ModelProcessor::CloudMesh> outgoingMeshModels;
 
     friend class ServiceProviderImpl;
 

@@ -31,13 +31,19 @@ public:
                                  float &version, int &heartBeatRate);
     void SendHeartBeat();
     int EstablishServer();
+    void setUsageFunction(void (*fp_)(int &));
 
 private:
     void SendBeat();
+    void CountUsage();
+
     std::unique_ptr<Cloud3D::LoadBalance::Stub> stub_;
     std::string srvAddress_;
     float version_ = 0.0;
     int heartBeatRate_ = 1000;
+    int usage_ = 0;
+    void (*fp_)(int&);
+    bool isUsageSet = false;
 };
 
 

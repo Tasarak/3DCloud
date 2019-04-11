@@ -2,7 +2,7 @@
 // Created by Jakub Klemens on 09/01/2019.
 //
 
-#include "BalancerTest.h"
+#include "BalancerSample.h"
 
 int main(int argc, char *argv[])
 {

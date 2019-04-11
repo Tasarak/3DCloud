@@ -17,8 +17,10 @@ void CloudClient::init()
 {
     ProviderFinder finder(balancerAddress_, minVersion_);
 
+    grpc::ChannelArguments ch_args;
+    ch_args.SetMaxReceiveMessageSize(-1);
     std::string providerAddress = finder.GetServer(services_);
-    auto channel = grpc::CreateChannel(providerAddress, grpc::InsecureChannelCredentials());
+    auto channel = grpc::CreateCustomChannel(providerAddress, grpc::InsecureChannelCredentials(), ch_args);
     stub_ = Cloud3D::ServiceProvide::NewStub(channel);
 }
 
@@ -237,12 +239,6 @@ int CloudClient::performModelsToNumbersOperation(std::string serviceName,
 
         return 1;
     }
-}
-
-ModelProcessor::CloudMesh CloudClient::generateCube()
-{
-    ModelProcessor processor;
-    return processor.generateCube();
 }
 
 void CloudClient::saveMeshToFile(std::string file, CloudClient::CloudMesh &loadedMesh)

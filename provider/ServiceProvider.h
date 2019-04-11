@@ -32,6 +32,7 @@ public:
 
     void setModelsToModelsService(ModelToModelService);
     void setModelsToNumbersService(ModelToNumberService);
+    void setUsageFunction(void (*fp_)(int &));
 
 private:
     void StartServer();
