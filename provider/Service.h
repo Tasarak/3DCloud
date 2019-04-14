@@ -17,6 +17,7 @@ public:
     const std::vector<std::string> &getIncomingModels() const;
     const std::vector<ModelProcessor::CloudMesh> &getIncomingMeshModels() const;
     void setOutgoingModels(const std::vector<std::string> &outgoingModels);
+    void addOutgoingModel(const std::string &outgoingModel);
     const std::string &getName() const;
 
 
@@ -38,6 +39,7 @@ public:
     : fp(fp) {name = name_;}
 
     void setOutgoingMeshModels(const std::vector<ModelProcessor::CloudMesh> &outgoingMeshModels);
+    void addOutgoingMeshModel(const ModelProcessor::CloudMesh &outgoingMeshModel);
 
 private:
     void (*fp)(ModelToModelService *input);
@@ -53,11 +55,12 @@ public:
     ModelToNumberService(std::string &name_, void (*fp)(ModelToNumberService *input))
     : fp(fp) {name = name_;}
 
-    void setOutgoingVector(const std::vector<float> &outgoingVector);
+    void setOutgoingVector(const std::vector<double> &outgoingVector);
+    void addOutgoingPoint(const double &point);
 
 private:
     void (*fp)(ModelToNumberService *input);
-    std::vector<float> outgoingVector;
+    std::vector<double> outgoingVector;
 
     friend class ServiceProviderImpl;
 };

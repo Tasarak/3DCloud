@@ -6,7 +6,6 @@
 
 void meshSmooth(ModelToModelService *service)
 {
-    std::vector<ModelProcessor::CloudMesh> outModels;
     for (auto mesh : service->getIncomingMeshModels())
     {
         OpenMesh::Smoother::JacobiLaplaceSmootherT<ModelProcessor::CloudMesh> smoother(mesh);
@@ -14,10 +13,8 @@ void meshSmooth(ModelToModelService *service)
         smoother.initialize(smoother.Tangential_and_Normal, smoother.C0);
         smoother.smooth(5);
 
-        outModels.push_back(mesh);
+        service->addOutgoingMeshModel(mesh);
     }
-
-    service->setOutgoingMeshModels(outModels);
 }
 
 void UsageFunction(int &usage)

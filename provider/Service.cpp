@@ -29,7 +29,22 @@ void ModelToModelService::setOutgoingMeshModels(const std::vector<ModelProcessor
     ModelToModelService::outgoingMeshModels = outgoingMeshModels;
 }
 
-void ModelToNumberService::setOutgoingVector(const std::vector<float> &outgoingVector)
+void ModelToNumberService::setOutgoingVector(const std::vector<double> &outgoingVector)
 {
     ModelToNumberService::outgoingVector = outgoingVector;
+}
+
+void Service::addOutgoingModel(const std::string &outgoingModel)
+{
+    Service::outgoingModels.push_back(outgoingModel);
+}
+
+void ModelToModelService::addOutgoingMeshModel(const ModelProcessor::CloudMesh &outgoingMeshModel)
+{
+    ModelToModelService::outgoingMeshModels.push_back(outgoingMeshModel);
+}
+
+void ModelToNumberService::addOutgoingPoint(const double &point)
+{
+    ModelToNumberService::outgoingVector.push_back(point);
 }
