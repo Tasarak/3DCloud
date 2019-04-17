@@ -57,20 +57,10 @@ public:
     void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 
 private:
-    struct AsyncClientCall
-    {
-        Cloud3D::Model updatedModel;
-        grpc::ClientContext context;
-        grpc::Status status;
-        std::unique_ptr<grpc::ClientAsyncResponseReader<Cloud3D::Model>> responseReader;
-    };
-
     void initWithSSL();
     void init();
 
     std::unique_ptr<Cloud3D::ServiceProvide::Stub> stub_;
-    grpc::CompletionQueue cq_;
-
     std::vector<std::string> services_;
     std::string balancerAddress_, certFilename_, keyFilename_, rootFilename_ = "";
     float minVersion_ =  0.0;

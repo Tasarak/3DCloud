@@ -31,7 +31,7 @@ struct ServerNode
     std::string address;
     std::vector<std::string> operations;
     float version;
-    u_int usage;
+    int usage;
     std::chrono::time_point<std::chrono::system_clock> lastBeat;
 };
 
@@ -58,7 +58,8 @@ private:
     void RemoveInactiveServer();
     std::string FindBestServer(ServerNode sNode);
     std::string MinUsageServer(std::vector<ServerNode> possibleServers);
-    std::vector<ServerNode> servers;
+
+    std::vector<ServerNode> servers_;
     std::thread updater_;
     std::mutex mutex_;
     int heartBeatRate_;

@@ -11,6 +11,26 @@ using grpc::ServerContext;
 using grpc::ServerCompletionQueue;
 using grpc::Status;
 
+LoadBalancer::LoadBalancer(std::string &balancerAddress, int &heartBeatRate) :
+                            balancerAddress_(balancerAddress), heartBeatRate_(heartBeatRate)
+{
+    ::log4cplus::initialize();
+    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
+}
+
+LoadBalancer::LoadBalancer(std::string &balancerAddress, int &heartBeatRate, std::string &certFilename,
+                           std::string &keyFilename, std::string &rootFilename) :
+                           balancerAddress_(balancerAddress),
+                           heartBeatRate_(heartBeatRate),
+                           certFilename_(certFilename),
+                           keyFilename_(keyFilename),
+                           rootFilename_(rootFilename)
+
+{
+    ::log4cplus::initialize();
+    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
+}
+
 void LoadBalancer::init()
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("LoadBalancer"));
@@ -21,8 +41,7 @@ void LoadBalancer::init()
     serverBuilder.RegisterService(&service);
 
     server_ = serverBuilder.BuildAndStart();
-    LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Load balancer listening on: ") << balancerAddress_);
-    std::cout << "Load balancer listening on " << balancerAddress_ << std::endl;
+    LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Load balancer_ listening on: ") << balancerAddress_);
     server_->Wait();
 }
 
@@ -53,13 +72,15 @@ void LoadBalancer::initWithSSL()
     serverBuilder.RegisterService(&service);
 
     server_ = serverBuilder.BuildAndStart();
-    LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Load balancer listening on: ") << balancerAddress_);
-    std::cout << "Load balancer listening on " << balancerAddress_ << std::endl;
+    LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Load balancer_ listening on: ") << balancerAddress_);
     server_->Wait();
 }
 
 LoadBalancer::LoadBalancer(std::string &configFile)
 {
+    ::log4cplus::initialize();
+    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
+
     FileParser parser;
     try
     {

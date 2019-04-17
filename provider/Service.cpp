@@ -6,45 +6,45 @@
 
 const std::vector<std::string> &Service::getIncomingModels() const
 {
-    return incomingModels;
+    return incomingModels_;
 }
 
 const std::vector<ModelProcessor::CloudMesh> &Service::getIncomingMeshModels() const
 {
-    return incomingMeshModels;
+    return incomingMeshModels_;
 }
 
 void Service::setOutgoingModels(const std::vector<std::string> &outgoingModels)
 {
-    Service::outgoingModels = outgoingModels;
+    Service::outgoingModels_ = outgoingModels;
 }
 
 const std::string &Service::getName() const
 {
-    return name;
+    return name_;
 }
 
 void ModelToModelService::setOutgoingMeshModels(const std::vector<ModelProcessor::CloudMesh> &outgoingMeshModels)
 {
-    ModelToModelService::outgoingMeshModels = outgoingMeshModels;
+    ModelToModelService::outgoingMeshModels_ = outgoingMeshModels;
 }
 
 void ModelToNumberService::setOutgoingVector(const std::vector<double> &outgoingVector)
 {
-    ModelToNumberService::outgoingVector = outgoingVector;
+    ModelToNumberService::outgoingVector_ = outgoingVector;
 }
 
 void Service::addOutgoingModel(const std::string &outgoingModel)
 {
-    Service::outgoingModels.push_back(outgoingModel);
+    Service::outgoingModels_.push_back(outgoingModel);
 }
 
 void ModelToModelService::addOutgoingMeshModel(const ModelProcessor::CloudMesh &outgoingMeshModel)
 {
-    ModelToModelService::outgoingMeshModels.push_back(outgoingMeshModel);
+    ModelToModelService::outgoingMeshModels_.push_back(outgoingMeshModel);
 }
 
 void ModelToNumberService::addOutgoingPoint(const double &point)
 {
-    ModelToNumberService::outgoingVector.push_back(point);
+    ModelToNumberService::outgoingVector_.push_back(point);
 }

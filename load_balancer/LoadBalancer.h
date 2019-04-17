@@ -24,15 +24,8 @@ public:
                  int &heartBeatRate,
                  std::string &certFilename,
                  std::string &keyFilename,
-                 std::string &rootFilename)
-                : balancerAddress_(balancerAddress),
-                  heartBeatRate_(heartBeatRate),
-                  certFilename_(certFilename),
-                  keyFilename_(keyFilename),
-                  rootFilename_(rootFilename)
-                {}
-    LoadBalancer(std::string &balancerAddress, int &heartBeatRate)
-                : balancerAddress_(balancerAddress), heartBeatRate_(heartBeatRate) {}
+                 std::string &rootFilename);
+    LoadBalancer(std::string &balancerAddress, int &heartBeatRate);
     LoadBalancer(std::string &configFile);
 
     ~LoadBalancer();
@@ -41,9 +34,9 @@ public:
 private:
     void init();
     void initWithSSL();
+
     std::unique_ptr<grpc::ServerCompletionQueue> cq_;
     std::unique_ptr<grpc::Server> server_;
-
     std::string balancerAddress_, certFilename_, keyFilename_, rootFilename_ = "";
     int heartBeatRate_ = 1000;
 };

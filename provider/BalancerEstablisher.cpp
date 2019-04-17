@@ -74,11 +74,9 @@ void BalancerEstablisher::SendBeat()
 
     if (!status.ok())
     {
-        std::cout << "SendHeartbeat rpc failed." << std::endl;
         while (EstablishServer())
         {
             std::this_thread::sleep_for(std::chrono::seconds(2));
-            std::cout << "Trying to Establish provider" << std::endl;
         }
     }
 }

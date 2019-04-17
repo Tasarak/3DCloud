@@ -53,14 +53,13 @@ Status LoadBalanceImpl::SendHeartbeat(ServerContext *context,
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("LoadBalancer"));
 
-    for (auto &server : servers)
+    for (auto &server : servers_)
     {
         if (server.address == request->serveraddresss())
         {
             server.usage = request->usage();
             server.lastBeat = std::chrono::system_clock::now();
             reply->set_status(true);
-            std::cout << "Beat received from provider: " <<request->serveraddresss() << std::endl;
             LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Beat received from provider:" << request->serveraddresss()));
             return Status::OK;
         }
@@ -89,8 +88,7 @@ Status LoadBalanceImpl::EstablishServer(::grpc::ServerContext* context,
     sNode.lastBeat = std::chrono::system_clock::now();
 
     std::lock_guard<std::mutex> guard(mutex_);
-    servers.push_back(sNode);
-    std::cout << "Server established" << std::endl;
+    servers_.push_back(sNode);
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Server Established on address: ") << sNode.address);
 
     response->set_status(true);
@@ -102,7 +100,7 @@ void LoadBalanceImpl::UpdateServerList()
 {
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(2*heartBeatRate_));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2*heartBeatRate_));
         RemoveInactiveServer();
     }
 }
@@ -110,17 +108,16 @@ void LoadBalanceImpl::UpdateServerList()
 void LoadBalanceImpl::RemoveInactiveServer()
 {
     std::lock_guard<std::mutex> guard(mutex_);
-    servers.erase(std::remove_if(servers.begin(), servers.end(), [this](const ServerNode& server){
+    servers_.erase(std::remove_if(servers_.begin(), servers_.end(), [this](const ServerNode& server){
         auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - server.lastBeat);
         return diff.count() > heartBeatRate_;
-    }), servers.end());
-
+    }), servers_.end());
 }
 
 std::string LoadBalanceImpl::FindBestServer(ServerNode sNode)
 {
     std::vector<ServerNode> possibleServers;
-    for (auto server : servers)
+    for (auto server : servers_)
     {
         if (sNode.version >= server.version)
         {

@@ -53,6 +53,8 @@ CloudClient::CloudClient(std::string &balancerAddress, float &minVersion, std::v
                           minVersion_(minVersion),
                           services_(services)
 {
+    ::log4cplus::initialize();
+    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
     init();
 }
 
@@ -69,6 +71,8 @@ CloudClient::CloudClient(std::string &balancerAddress,
                          keyFilename_(keyFilename),
                          rootFilename_(rootFilename)
 {
+    ::log4cplus::initialize();
+    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
     initWithSSL();
 }
 
@@ -124,12 +128,10 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
 
     if (status.ok())
     {
-        std::cout << "ModelsToModel Successful\n";
         return 0;
     }
     else
     {
-        std::cout << "ModelsToModel Failed\n";
         return 1;
     }
 }
@@ -157,13 +159,10 @@ int CloudClient::performModelsToNumbersOperation(std::string serviceName,
 
     if (status.ok())
     {
-        std::cout << "ModelsToNumbers Successful\n";
         return 0;
     }
     else
     {
-        std::cout << "ModelsToNumbers Failed\n";
-
         return 1;
     }
 }
@@ -195,13 +194,10 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
             incomingModels.push_back(mesh);
         }
 
-        std::cout << "MeshtoMesh Successful\n";
         return 0;
     }
     else
     {
-        std::cout << "MeshtoMesh Failed\n";
-
         return 1;
     }
 }
@@ -230,13 +226,10 @@ int CloudClient::performModelsToNumbersOperation(std::string serviceName,
 
     if (status.ok())
     {
-        std::cout << "ModelsToNumbers Successful\n";
         return 0;
     }
     else
     {
-        std::cout << "ModelsToNumbers Failed\n";
-
         return 1;
     }
 }

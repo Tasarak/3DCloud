@@ -20,10 +20,10 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
         {
             for (auto model : request->data())
             {
-                service.incomingModels.push_back(model);
+                service.incomingModels_.push_back(model);
             }
-            service.fp(&service);
-            for (auto model : service.outgoingModels)
+            service.fp_(&service);
+            for (auto model : service.outgoingModels_)
             {
                 response->add_data(model);
             }
@@ -39,14 +39,14 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
 {
     for (auto service : ModelToNumbersServices)
     {
-        if (request->operation() == service.name)
+        if (request->operation() == service.name_)
         {
             for (auto model : request->data())
             {
-                service.incomingModels.push_back(model);
+                service.incomingModels_.push_back(model);
             }
-            service.fp(&service);
-            for (auto number : service.outgoingVector)
+            service.fp_(&service);
+            for (auto number : service.outgoingVector_)
             {
                 response->add_point(number);
             }
@@ -65,16 +65,16 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
     ModelProcessor::CloudMesh mesh;
     for (auto service : ModelsToModelsServices)
     {
-        if (request->operation() == service.name)
+        if (request->operation() == service.name_)
         {
             for (auto model : request->mesh())
             {
                 mesh.clear();
                 modelManager.deserializeModel(mesh, model);
-                service.incomingMeshModels.push_back(mesh);
+                service.incomingMeshModels_.push_back(mesh);
             }
-            service.fp(&service);
-            for (auto meshOut : service.outgoingMeshModels)
+            service.fp_(&service);
+            for (auto meshOut : service.outgoingMeshModels_)
             {
                 modelManager.serializeModel(*response, meshOut);
             }
@@ -92,16 +92,16 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
     ModelProcessor::CloudMesh mesh;
     for (auto service : ModelToNumbersServices)
     {
-        if (request->operation() == service.name)
+        if (request->operation() == service.name_)
         {
             for (auto model : request->mesh())
             {
                 mesh.clear();
                 modelManager.deserializeModel(mesh, model);
-                service.incomingMeshModels.push_back(mesh);
+                service.incomingMeshModels_.push_back(mesh);
             }
-            service.fp(&service);
-            for (auto number : service.outgoingVector)
+            service.fp_(&service);
+            for (auto number : service.outgoingVector_)
             {
                 response->add_point(number);
             }
@@ -109,38 +109,4 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
         }
     }
     return ::grpc::Status::CANCELLED;
-}
-
-::grpc::Status ServiceProviderImpl::StreamMeshtoMesh(::grpc::ServerContext *context,
-                                                     ::grpc::ServerReaderWriter<::Cloud3D::OpenMeshModel, ::Cloud3D::OpenMeshModel> *stream)
-{
-    ModelProcessor modelManager;
-    ModelProcessor::CloudMesh mesh;
-    Cloud3D::OpenMeshModel model, outModel;
-
-    while (stream->Read(&model))
-    {
-        for (auto service : ModelsToModelsServices)
-        {
-
-            if (model.operation() == service.name)
-            {
-                for (auto model : model.mesh())
-                {
-                    mesh.clear();
-                    modelManager.deserializeModel(mesh, model);
-                    service.incomingMeshModels.push_back(mesh);
-                }
-                service.fp(&service);
-                for (auto meshOut : service.outgoingMeshModels)
-                {
-                    modelManager.serializeModel(outModel, meshOut);
-                    stream->Write(outModel);
-                }
-                return ::grpc::Status::OK;
-            }
-        }
-        return ::grpc::Status::CANCELLED;
-    }
-
 }

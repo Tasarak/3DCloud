@@ -6,9 +6,6 @@
 
 int main(int argc, char *argv[])
 {
-    ::log4cplus::initialize();
-    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
-
     std::vector<std::string> vec{"MeshSmooth"};
     std::string balancerAddress = std::string(argv[1]);
     CloudClient::CloudMesh loadedMesh;
@@ -20,6 +17,7 @@ int main(int argc, char *argv[])
     client.loadMeshFromFile("./Samples/a380.obj", loadedMesh);
     mesh.push_back(loadedMesh);
     std::vector<CloudClient::CloudMesh> cloudMesh;
+
     client.performModelsToModelsOperation("MeshSmooth", mesh, cloudMesh);
     for (auto mesh1 : cloudMesh)
     {

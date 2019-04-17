@@ -38,14 +38,13 @@ private:
     void StartServer();
     void init();
     void initWithSSL();
+
     std::unique_ptr<grpc::ServerCompletionQueue> cq_;
     std::unique_ptr<grpc::Server> server_;
-    grpc::ServerBuilder serverBuilder;
-    ServiceProviderImpl* serviceProviderImpl;
-    BalancerEstablisher* balancer;
-    grpc::SslServerCredentialsOptions sslOps;
-
-    bool useAuthorization = false;
+    grpc::ServerBuilder serverBuilder_;
+    ServiceProviderImpl* serviceProviderImpl_;
+    BalancerEstablisher* balancer_;
+    grpc::SslServerCredentialsOptions sslOps_;
     std::string key_;
     std::string cert_;
     std::string root_;

@@ -20,17 +20,17 @@ using Cloud3D::ServiceProvide;
 
 void ServiceProvider::init()
 {
-    serviceProviderImpl = &ServiceProviderImpl::GetInstance();
-    balancer = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_,
+    serviceProviderImpl_ = &ServiceProviderImpl::GetInstance();
+    balancer_ = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_,
                                                                             grpc::InsecureChannelCredentials()),
                                        version_,
                                        heartBeatRate_);
-    serverBuilder.AddListeningPort(providerAddress_, grpc::InsecureServerCredentials());
+    serverBuilder_.AddListeningPort(providerAddress_, grpc::InsecureServerCredentials());
 }
 
 void ServiceProvider::initWithSSL()
 {
-    serviceProviderImpl = &ServiceProviderImpl::GetInstance();
+    serviceProviderImpl_ = &ServiceProviderImpl::GetInstance();
 
     FileParser parser;
     parser.read(certFilename_, cert_);
@@ -41,15 +41,15 @@ void ServiceProvider::initWithSSL()
 
     auto channel_creds = grpc::SslCredentials(grpc::SslCredentialsOptions(opts));
 
-    balancer = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_, channel_creds),
+    balancer_ = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_, channel_creds),
                                        version_, heartBeatRate_);
 
     grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {key_, cert_};
 
-    sslOps.pem_root_certs = root_;
-    sslOps.pem_key_cert_pairs.push_back ( keycert );
+    sslOps_.pem_root_certs = root_;
+    sslOps_.pem_key_cert_pairs.push_back ( keycert );
 
-    serverBuilder.AddListeningPort(providerAddress_, grpc::SslServerCredentials(sslOps));
+    serverBuilder_.AddListeningPort(providerAddress_, grpc::SslServerCredentials(sslOps_));
 }
 
 ServiceProvider::ServiceProvider(std::string providerAddress, std::string balancerAddress,
@@ -121,15 +121,15 @@ void ServiceProvider::StartServer()
 
 int ServiceProvider::Run()
 {
-    serverBuilder.RegisterService(serviceProviderImpl);
-    serverBuilder.SetMaxReceiveMessageSize(-1);
+    serverBuilder_.RegisterService(serviceProviderImpl_);
+    serverBuilder_.SetMaxReceiveMessageSize(-1);
 
-    server_ = serverBuilder.BuildAndStart();
+    server_ = serverBuilder_.BuildAndStart();
 
-    balancer->EstablishServer();
+    balancer_->EstablishServer();
 
     //main loop
-    std::thread first(&BalancerEstablisher::SendHeartBeat, balancer);
+    std::thread first(&BalancerEstablisher::SendHeartBeat, balancer_);
     std::thread second(&ServiceProvider::StartServer, this);
 
     first.join();
@@ -140,33 +140,33 @@ int ServiceProvider::Run()
 
 void ServiceProvider::setModelsToModelsService(ModelToModelService newService)
 {
-    for (auto const &name : serviceProviderImpl->ListOfServiceNames)
+    for (auto const &name : serviceProviderImpl_->ListOfServiceNames)
     {
         if (name == newService.getName())
         {
-            throw std::invalid_argument("Service name already exists.\n");
+            throw std::invalid_argument("Service name_ already exists.\n");
         }
     }
 
-    serviceProviderImpl->ModelsToModelsServices.push_back(newService);
-    serviceProviderImpl->ListOfServiceNames.push_back(newService.getName());
+    serviceProviderImpl_->ModelsToModelsServices.push_back(newService);
+    serviceProviderImpl_->ListOfServiceNames.push_back(newService.getName());
 }
 
 void ServiceProvider::setModelsToNumbersService(ModelToNumberService newService)
 {
-    for (auto const &name : serviceProviderImpl->ListOfServiceNames)
+    for (auto const &name : serviceProviderImpl_->ListOfServiceNames)
     {
         if (name == newService.getName())
         {
-            throw std::invalid_argument("Service name already exists.\n");
+            throw std::invalid_argument("Service name_ already exists.\n");
         }
     }
 
-    serviceProviderImpl->ModelToNumbersServices.push_back(newService);
-    serviceProviderImpl->ListOfServiceNames.push_back(newService.getName());
+    serviceProviderImpl_->ModelToNumbersServices.push_back(newService);
+    serviceProviderImpl_->ListOfServiceNames.push_back(newService.getName());
 }
 
 void ServiceProvider::setUsageFunction(void (*fp)(int &))
 {
-    balancer->setUsageFunction(fp);
+    balancer_->setUsageFunction(fp);
 }
