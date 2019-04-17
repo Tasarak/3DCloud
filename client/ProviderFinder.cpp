@@ -2,7 +2,6 @@
 // Created by Jakub Klemens on 27/08/2018.
 //
 
-#include <cloud_services.grpc.pb.h>
 #include "ProviderFinder.h"
 
 using grpc::ClientWriter;

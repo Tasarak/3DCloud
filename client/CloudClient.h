@@ -17,7 +17,6 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 #include <OpenMesh/Core/Mesh/PolyMesh_ArrayKernelT.hh>
 
-#include "cloud_services.grpc.pb.h"
 #include "ProviderFinder.h"
 #include "Shared/ModelProcessor.h"
 #include "Shared/FileParser.h"
@@ -48,11 +47,11 @@ public:
 
     int performModelsToNumbersOperation(std::string serviceName,
                                         std::vector<std::string> &outgoingModels,
-                                        std::vector<float> &incomingNumbers);
+                                        std::vector<double> &incomingNumbers);
 
     int performModelsToNumbersOperation(std::string serviceName,
                                         std::vector<CloudMesh> &outgoingModels,
-                                        std::vector<float> &incomingNumbers);
+                                        std::vector<double> &incomingNumbers);
     void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
     void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 

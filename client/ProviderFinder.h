@@ -20,7 +20,7 @@
 #include <log4cplus/loggingmacros.h>
 #include <log4cplus/configurator.h>
 
-#include "cloud_services.grpc.pb.h"
+#include <cloud_services.grpc.pb.h>
 
 class ProviderFinder
 {

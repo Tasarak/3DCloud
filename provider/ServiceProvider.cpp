@@ -2,9 +2,6 @@
 // Created by Jakub Klemens on 06/08/2018.
 //
 
-#include <cloud_services.grpc.pb.h>
-#include <cloud_services.pb.h>
-
 #include "ServiceProvider.h"
 
 using grpc::Server;

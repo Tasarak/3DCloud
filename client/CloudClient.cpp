@@ -2,7 +2,6 @@
 // Created by Jakub Klemens on 06/08/2018.
 //
 
-#include <cloud_services.pb.h>
 #include "CloudClient.h"
 
 using Cloud3D::ServiceProvide;
@@ -138,7 +137,7 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
 
 int CloudClient::performModelsToNumbersOperation(std::string serviceName,
                                                  std::vector<std::string> &outgoingModels,
-                                                 std::vector<float> &incomingNumbers)
+                                                 std::vector<double> &incomingNumbers)
 {
     ClientContext ctx;
     Model outModel;
@@ -204,7 +203,7 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
 
 int CloudClient::performModelsToNumbersOperation(std::string serviceName,
                                                  std::vector<CloudClient::CloudMesh> &outgoingModels,
-                                                 std::vector<float> &incomingNumbers)
+                                                 std::vector<double> &incomingNumbers)
 {
     ClientContext ctx;
     OpenMeshModel outModel;
