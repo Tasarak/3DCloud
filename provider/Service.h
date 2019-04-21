@@ -35,8 +35,8 @@ protected:
 class ModelToModelService : public Service
 {
 public:
-    ModelToModelService(std::string &name_, void (*fp)(ModelToModelService *input))
-    : fp_(fp) {name_ = name_;}
+    ModelToModelService(std::string &name, void (*fp)(ModelToModelService *input))
+    : fp_(fp) {name_ = name;}
 
     void setOutgoingMeshModels(const std::vector<ModelProcessor::CloudMesh> &outgoingMeshModels);
     void addOutgoingMeshModel(const ModelProcessor::CloudMesh &outgoingMeshModel);
@@ -52,8 +52,8 @@ private:
 class ModelToNumberService : public Service
 {
 public:
-    ModelToNumberService(std::string &name_, void (*fp)(ModelToNumberService *input))
-    : fp_(fp) {name_ = name_;}
+    ModelToNumberService(std::string &name, void (*fp)(ModelToNumberService *input))
+    : fp_(fp) {name_ = name;}
 
     void setOutgoingVector(const std::vector<double> &outgoingVector);
     void addOutgoingPoint(const double &point);

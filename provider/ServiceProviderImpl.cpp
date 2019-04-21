@@ -14,6 +14,7 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                                                    const ::Cloud3D::Model *request,
                                                    ::Cloud3D::Model *response)
 {
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ServiceProvider"));
     for (auto service : ModelsToModelsServices)
     {
         if (request->operation() == service.getName())
@@ -22,7 +23,9 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
             {
                 service.incomingModels_.push_back(model);
             }
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of execution of Service: ") << service.getName());
             service.fp_(&service);
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of execution of Service: ") << service.getName());
             for (auto model : service.outgoingModels_)
             {
                 response->add_data(model);
@@ -37,6 +40,7 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                                                     const ::Cloud3D::Model *request,
                                                     ::Cloud3D::VectorofNumbers *response)
 {
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ServiceProvider"));
     for (auto service : ModelToNumbersServices)
     {
         if (request->operation() == service.name_)
@@ -45,7 +49,9 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
             {
                 service.incomingModels_.push_back(model);
             }
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of execution of Service: ") << service.getName());
             service.fp_(&service);
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of execution of Service: ") << service.getName());
             for (auto number : service.outgoingVector_)
             {
                 response->add_point(number);
@@ -61,8 +67,10 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                                                const ::Cloud3D::OpenMeshModel *request,
                                                ::Cloud3D::OpenMeshModel *response)
 {
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ServiceProvider"));
     ModelProcessor modelManager;
     ModelProcessor::CloudMesh mesh;
+
     for (auto service : ModelsToModelsServices)
     {
         if (request->operation() == service.name_)
@@ -73,7 +81,9 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                 modelManager.deserializeModel(mesh, model);
                 service.incomingMeshModels_.push_back(mesh);
             }
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of execution of Service: ") << service.getName());
             service.fp_(&service);
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of execution of Service: ") << service.getName());
             for (auto meshOut : service.outgoingMeshModels_)
             {
                 modelManager.serializeModel(*response, meshOut);
@@ -88,8 +98,10 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                                                   const ::Cloud3D::OpenMeshModel *request,
                                                   ::Cloud3D::VectorofNumbers *response)
 {
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ServiceProvider"));
     ModelProcessor modelManager;
     ModelProcessor::CloudMesh mesh;
+
     for (auto service : ModelToNumbersServices)
     {
         if (request->operation() == service.name_)
@@ -100,7 +112,9 @@ ServiceProviderImpl& ServiceProviderImpl::GetInstance()
                 modelManager.deserializeModel(mesh, model);
                 service.incomingMeshModels_.push_back(mesh);
             }
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of execution of Service: ") << service.getName());
             service.fp_(&service);
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of execution of Service: ") << service.getName());
             for (auto number : service.outgoingVector_)
             {
                 response->add_point(number);

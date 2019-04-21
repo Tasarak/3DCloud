@@ -11,7 +11,7 @@ void meshSmooth(ModelToModelService *service)
         OpenMesh::Smoother::JacobiLaplaceSmootherT<ModelProcessor::CloudMesh> smoother(mesh);
 
         smoother.initialize(smoother.Tangential_and_Normal, smoother.C0);
-        smoother.smooth(5);
+        smoother.smooth(200);
 
         service->addOutgoingMeshModel(mesh);
     }
@@ -27,12 +27,9 @@ void UsageFunction(int &usage)
 
 int main(int argc, char *argv[])
 {
-    ::log4cplus::initialize();
-    ::log4cplus::PropertyConfigurator::doConfigure("./Shared/log4cplus_configure.ini");
-    float version = 1.1;
-    int heartBeatRate = 2500;
-
-    ServiceProvider* provider = new ServiceProvider(argv[1], argv[2], version, heartBeatRate);
+    std::string configFile = std::string(argv[1]);
+    
+    ServiceProvider* provider = new ServiceProvider(configFile);
     std::string serviceName = "MeshSmooth";
     ModelToModelService service(serviceName, meshSmooth);
     provider->setModelsToModelsService(service);

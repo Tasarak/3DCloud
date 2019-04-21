@@ -19,6 +19,7 @@
 #include <log4cplus/logger.h>
 #include <log4cplus/loggingmacros.h>
 #include <log4cplus/configurator.h>
+#include <log4cplus/loglevel.h>
 
 #include <cloud_services.grpc.pb.h>
 

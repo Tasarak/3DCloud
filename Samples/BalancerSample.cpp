@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-    std::string configFile = "./load_balancer/config.txt";
+    std::string configFile = std::string(argv[1]);
     
     LoadBalancer balancer(configFile);
     balancer.Run();

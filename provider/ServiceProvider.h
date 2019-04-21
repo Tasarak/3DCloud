@@ -38,6 +38,7 @@ private:
     void StartServer();
     void init();
     void initWithSSL();
+    void initServiceProviderImpl();
 
     std::unique_ptr<grpc::ServerCompletionQueue> cq_;
     std::unique_ptr<grpc::Server> server_;
@@ -51,6 +52,7 @@ private:
     std::string providerAddress_, balancerAddress_, certFilename_, keyFilename_, rootFilename_ = "";
     float version_ = 0.0;
     int heartBeatRate_ = 1000;
+    bool isUsingAuthentication_;
 };
 
 #endif //INC_CLOUD_CLOUD_SERVER_H

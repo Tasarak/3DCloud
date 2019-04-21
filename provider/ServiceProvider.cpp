@@ -15,9 +15,13 @@ using Cloud3D::Model;
 using Cloud3D::VectorofNumbers;
 using Cloud3D::ServiceProvide;
 
-void ServiceProvider::init()
+void ServiceProvider::initServiceProviderImpl()
 {
     serviceProviderImpl_ = &ServiceProviderImpl::GetInstance();
+}
+
+void ServiceProvider::init()
+{
     balancer_ = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_,
                                                                             grpc::InsecureChannelCredentials()),
                                        version_,
@@ -27,8 +31,6 @@ void ServiceProvider::init()
 
 void ServiceProvider::initWithSSL()
 {
-    serviceProviderImpl_ = &ServiceProviderImpl::GetInstance();
-
     FileParser parser;
     parser.read(certFilename_, cert_);
     parser.read(keyFilename_, key_);
@@ -54,7 +56,9 @@ ServiceProvider::ServiceProvider(std::string providerAddress, std::string balanc
                                 : providerAddress_(providerAddress), balancerAddress_(balancerAddress),
                                   version_(version), heartBeatRate_(heartBeatRate)
 {
+    isUsingAuthentication_ = false;
     init();
+    initServiceProviderImpl();
 }
 
 ServiceProvider::ServiceProvider(std::string providerAddress,
@@ -72,7 +76,9 @@ ServiceProvider::ServiceProvider(std::string providerAddress,
                                    keyFilename_(keyFilename),
                                    rootFilename_(rootFilename)
 {
+    isUsingAuthentication_ = true;
     initWithSSL();
+    initServiceProviderImpl();
 }
 
 ServiceProvider::ServiceProvider(std::string &inputFile)
@@ -96,11 +102,15 @@ ServiceProvider::ServiceProvider(std::string &inputFile)
 
     if (!certFilename_.empty() && !keyFilename_.empty() && !rootFilename_.empty())
     {
+        isUsingAuthentication_ = true;
         initWithSSL();
+        initServiceProviderImpl();
     }
     else
     {
+        isUsingAuthentication_ = false;
         init();
+        initServiceProviderImpl();
     }
 
 }
@@ -118,6 +128,14 @@ void ServiceProvider::StartServer()
 
 int ServiceProvider::Run()
 {
+    if (isUsingAuthentication_)
+    {
+        //initWithSSL();
+    }
+    else
+    {
+        //init();
+    }
     serverBuilder_.RegisterService(serviceProviderImpl_);
     serverBuilder_.SetMaxReceiveMessageSize(-1);
 

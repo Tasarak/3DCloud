@@ -56,8 +56,8 @@ public:
     void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 
 private:
-    void initWithSSL();
-    void init();
+    int initWithSSL();
+    int init();
 
     std::unique_ptr<Cloud3D::ServiceProvide::Stub> stub_;
     std::vector<std::string> services_;

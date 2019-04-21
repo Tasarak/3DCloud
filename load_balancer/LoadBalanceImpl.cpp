@@ -60,7 +60,7 @@ Status LoadBalanceImpl::SendHeartbeat(ServerContext *context,
             server.usage = request->usage();
             server.lastBeat = std::chrono::system_clock::now();
             reply->set_status(true);
-            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Beat received from provider:" << request->serveraddresss()));
+            LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("Beat received from provider:" << request->serveraddresss()));
             return Status::OK;
         }
     }
@@ -119,7 +119,7 @@ std::string LoadBalanceImpl::FindBestServer(ServerNode sNode)
     std::vector<ServerNode> possibleServers;
     for (auto server : servers_)
     {
-        if (sNode.version >= server.version)
+        if (server.version >= sNode.version)
         {
             int opCounter = 0;
 
