@@ -9,7 +9,7 @@ void meshSmooth(ModelProcessor::CloudMesh &mesh)
         OpenMesh::Smoother::JacobiLaplaceSmootherT<ModelProcessor::CloudMesh> smoother(mesh);
 
         smoother.initialize(smoother.Tangential_and_Normal, smoother.C0);
-        smoother.smooth(200);
+        smoother.smooth(50);
 }
 
 int main(int argc, char *argv[])

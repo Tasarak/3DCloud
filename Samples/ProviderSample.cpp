@@ -8,7 +8,7 @@ void meshSmooth(ModelToModelService *service)
 {
     for (auto mesh : service->getIncomingMeshModels())
     {
-        OpenMesh::Smoother::LaplaceSmootherT<ModelProcessor::CloudMesh> smoother(mesh);
+        OpenMesh::Smoother::JacobiLaplaceSmootherT<ModelProcessor::CloudMesh> smoother(mesh);
 
         smoother.initialize(smoother.Tangential_and_Normal, smoother.C0);
         smoother.smooth(200);

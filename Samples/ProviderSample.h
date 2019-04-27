@@ -7,7 +7,7 @@
 
 #include <OpenMesh/Tools/Smoother/JacobiLaplaceSmootherT.hh>
 #include <random>
-
+#include "client/CloudClient.h"
 #include "provider/ServiceProvider.h"
 
 #endif //INC_3DCLOUD_PROVIDERTEST_H
