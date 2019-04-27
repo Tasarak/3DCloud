@@ -88,3 +88,9 @@ target_link_libraries(LoadBalancerlib
 add_executable(BalancerSample Samples/BalancerSample.cpp Samples/BalancerSample.h)
 
 target_link_libraries(BalancerSample LoadBalancerlib)
+
+#Building Smooth Sample
+
+add_executable(SmoothSample Samples/SmoothSample.cpp Samples/SmoothSample.h)
+
+target_link_libraries(SmoothSample CloudClientlib)

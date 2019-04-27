@@ -52,8 +52,8 @@ public:
     int performModelsToNumbersOperation(std::string serviceName,
                                         std::vector<CloudMesh> &outgoingModels,
                                         std::vector<double> &incomingNumbers);
-    void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
-    void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
+    static void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
+    static void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 
 private:
     int initWithSSL();
