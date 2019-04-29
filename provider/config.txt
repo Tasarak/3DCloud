@@ -1,0 +1,2 @@
+providerAddress=34.74.61.193:50051
+balancerAddress=34.66.133.215:50051
