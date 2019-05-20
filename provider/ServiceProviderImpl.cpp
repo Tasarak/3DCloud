@@ -4,7 +4,7 @@
 
 #include "ServiceProviderImpl.h"
 
-ServiceProviderImpl& ServiceProviderImpl::GetInstance()
+ServiceProviderImpl& ServiceProviderImpl::getInstance()
 {
     static ServiceProviderImpl instance;
     return instance;

@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     mesh.push_back(loadedMesh);
     std::vector<CloudClient::CloudMesh> cloudMesh;
 
-    client.performModelsToModelsOperation("MeshSmooth", mesh, cloudMesh);
+    client.performOperation("MeshSmooth", mesh, cloudMesh);
     for (auto mesh1 : cloudMesh)
     {
         client.saveMeshToFile(outputFile, mesh1);

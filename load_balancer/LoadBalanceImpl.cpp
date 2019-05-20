@@ -22,7 +22,7 @@ using Cloud3D::Confirmation;
 
 LoadBalanceImpl::LoadBalanceImpl(int &heartBeatRate) : heartBeatRate_(heartBeatRate)
 {
-    updater_ = std::thread(&LoadBalanceImpl::UpdateServerList, this);
+    updater_ = std::thread(&LoadBalanceImpl::updateServerList, this);
 }
 
 LoadBalanceImpl::~LoadBalanceImpl()
@@ -42,7 +42,7 @@ Status LoadBalanceImpl::ListServer(::grpc::ServerContext* context,
         sNode.operations.push_back(operation);
     }
 
-    response->set_serveraddresss(FindBestServer(sNode));
+    response->set_serveraddresss(findBestServer(sNode));
 
     return Status::OK;
 }
@@ -96,16 +96,16 @@ Status LoadBalanceImpl::EstablishServer(::grpc::ServerContext* context,
     return Status::OK;
 }
 
-void LoadBalanceImpl::UpdateServerList()
+void LoadBalanceImpl::updateServerList()
 {
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(2*heartBeatRate_));
-        RemoveInactiveServer();
+        removeInactiveServer();
     }
 }
 
-void LoadBalanceImpl::RemoveInactiveServer()
+void LoadBalanceImpl::removeInactiveServer()
 {
     std::lock_guard<std::mutex> guard(mutex_);
     servers_.erase(std::remove_if(servers_.begin(), servers_.end(), [this](const ServerNode& server){
@@ -114,7 +114,7 @@ void LoadBalanceImpl::RemoveInactiveServer()
     }), servers_.end());
 }
 
-std::string LoadBalanceImpl::FindBestServer(ServerNode sNode)
+std::string LoadBalanceImpl::findBestServer(ServerNode sNode)
 {
     std::vector<ServerNode> possibleServers;
     for (auto server : servers_)
@@ -140,10 +140,10 @@ std::string LoadBalanceImpl::FindBestServer(ServerNode sNode)
             }
         }
     }
-    return MinUsageServer(possibleServers);
+    return minUsageServer(possibleServers);
 }
 
-std::string LoadBalanceImpl::MinUsageServer(std::vector<ServerNode> possibleServers)
+std::string LoadBalanceImpl::minUsageServer(std::vector<ServerNode> possibleServers)
 {
     if (possibleServers.empty())
     {

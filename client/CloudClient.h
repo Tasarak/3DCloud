@@ -37,21 +37,21 @@ public:
 
     CloudClient(std::string &configFile, std::vector<std::string> &services);
     ~CloudClient() = default;
-    int performModelsToModelsOperation(std::string serviceName,
-                                       std::vector<std::string> &outgoingModels,
-                                       std::vector<std::string> &incomingModels);
+    int performOperation(std::string serviceName,
+                         std::vector<std::string> &outgoingModels,
+                         std::vector<std::string> &incomingModels);
 
-    int performModelsToModelsOperation(std::string serviceName,
-                                       std::vector<CloudMesh> &outgoingModels,
-                                       std::vector<CloudMesh> &incomingModels);
+    int performOperation(std::string serviceName,
+                         std::vector<CloudMesh> &outgoingModels,
+                         std::vector<CloudMesh> &incomingModels);
 
-    int performModelsToNumbersOperation(std::string serviceName,
-                                        std::vector<std::string> &outgoingModels,
-                                        std::vector<double> &incomingNumbers);
+    int performOperation(std::string serviceName,
+                         std::vector<std::string> &outgoingModels,
+                         std::vector<double> &incomingNumbers);
 
-    int performModelsToNumbersOperation(std::string serviceName,
-                                        std::vector<CloudMesh> &outgoingModels,
-                                        std::vector<double> &incomingNumbers);
+    int performOperation(std::string serviceName,
+                         std::vector<CloudMesh> &outgoingModels,
+                         std::vector<double> &incomingNumbers);
     static void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
     static void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 

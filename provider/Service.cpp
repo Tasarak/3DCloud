@@ -29,7 +29,7 @@ void ModelToModelService::setOutgoingMeshModels(const std::vector<ModelProcessor
     ModelToModelService::outgoingMeshModels_ = outgoingMeshModels;
 }
 
-void ModelToNumberService::setOutgoingVector(const std::vector<double> &outgoingVector)
+void ModelToNumberService::setOutgoingPoints(const std::vector<double> &outgoingVector)
 {
     ModelToNumberService::outgoingVector_ = outgoingVector;
 }

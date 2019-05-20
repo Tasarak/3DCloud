@@ -29,7 +29,7 @@ public:
     LoadBalancer(std::string &configFile);
 
     ~LoadBalancer();
-    void Run();
+    void run();
 
 private:
     void init();

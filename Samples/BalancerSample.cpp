@@ -9,6 +9,6 @@ int main(int argc, char *argv[])
     std::string configFile = std::string(argv[1]);
     
     LoadBalancer balancer(configFile);
-    balancer.Run();
+    balancer.run();
     return 0;
 }

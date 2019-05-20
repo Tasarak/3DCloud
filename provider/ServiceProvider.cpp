@@ -17,7 +17,7 @@ using Cloud3D::ServiceProvide;
 
 void ServiceProvider::initServiceProviderImpl()
 {
-    serviceProviderImpl_ = &ServiceProviderImpl::GetInstance();
+    serviceProviderImpl_ = &ServiceProviderImpl::getInstance();
 }
 
 void ServiceProvider::init()
@@ -121,12 +121,12 @@ ServiceProvider::~ServiceProvider()
     cq_->Shutdown();
 }
 
-void ServiceProvider::StartServer()
+void ServiceProvider::startServer()
 {
     server_->Wait();
 }
 
-int ServiceProvider::Run()
+int ServiceProvider::run()
 {
     if (isUsingAuthentication_)
     {
@@ -141,11 +141,11 @@ int ServiceProvider::Run()
 
     server_ = serverBuilder_.BuildAndStart();
 
-    balancer_->EstablishServer();
+    balancer_->establishServer();
 
     //main loop
-    std::thread first(&BalancerEstablisher::SendHeartBeat, balancer_);
-    std::thread second(&ServiceProvider::StartServer, this);
+    std::thread first(&BalancerEstablisher::sendHeartBeat, balancer_);
+    std::thread second(&ServiceProvider::startServer, this);
 
     first.join();
     second.join();

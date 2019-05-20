@@ -28,14 +28,14 @@ public:
                     std::string &rootFilename);
     ServiceProvider(std::string &inputFile);
     ~ServiceProvider();
-    int Run();
+    int run();
 
     void setModelsToModelsService(ModelToModelService);
     void setModelsToNumbersService(ModelToNumberService);
     void setUsageFunction(void (*fp_)(int &));
 
 private:
-    void StartServer();
+    void startServer();
     void init();
     void initWithSSL();
     void initServiceProviderImpl();

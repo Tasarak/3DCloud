@@ -24,7 +24,7 @@ BalancerEstablisher::BalancerEstablisher(std::string &srvAddress, std::shared_pt
                                         heartBeatRate_(heartBeatRate)
 {}
 
-int BalancerEstablisher::EstablishServer()
+int BalancerEstablisher::establishServer()
 {
     NewServer server;
     Confirmation confirmation;
@@ -33,7 +33,7 @@ int BalancerEstablisher::EstablishServer()
     server.set_serveraddress(srvAddress_);
     server.set_version(version_);
 
-    ServiceProviderImpl *provider = &ServiceProviderImpl::GetInstance();
+    ServiceProviderImpl *provider = &ServiceProviderImpl::getInstance();
 
     for (const auto &operation : provider->ListOfServiceNames)
     {
@@ -51,17 +51,17 @@ int BalancerEstablisher::EstablishServer()
     }
 }
 
-void BalancerEstablisher::SendHeartBeat()
+void BalancerEstablisher::sendHeartBeat()
 {
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(heartBeatRate_));
-        CountUsage();
-        SendBeat();
+        countUsage();
+        sendBeat();
     }
 }
 
-void BalancerEstablisher::SendBeat()
+void BalancerEstablisher::sendBeat()
 {
     HeartBeat beat;
     HeartBeatReply reply;
@@ -74,14 +74,14 @@ void BalancerEstablisher::SendBeat()
 
     if (!status.ok())
     {
-        while (EstablishServer())
+        while (establishServer())
         {
             std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     }
 }
 
-void BalancerEstablisher::CountUsage()
+void BalancerEstablisher::countUsage()
 {
     if (isUsageSet)
     {

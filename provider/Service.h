@@ -55,7 +55,7 @@ public:
     ModelToNumberService(std::string &name, void (*fp)(ModelToNumberService *input))
     : fp_(fp) {name_ = name;}
 
-    void setOutgoingVector(const std::vector<double> &outgoingVector);
+    void setOutgoingPoints(const std::vector<double> &outgoingVector);
     void addOutgoingPoint(const double &point);
 
 private:

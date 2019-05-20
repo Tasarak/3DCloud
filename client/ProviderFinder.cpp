@@ -18,7 +18,7 @@ ProviderFinder::ProviderFinder(std::string &balancerAddress, float &version) : v
     stub_ = Cloud3D::LoadBalance::NewStub(grpc::CreateChannel(balancerAddress, grpc::InsecureChannelCredentials()));
 }
 
-std::string ProviderFinder::GetServer(std::vector<std::string> operations)
+std::string ProviderFinder::getServer(std::vector<std::string> operations)
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ProviderFinder"));
 

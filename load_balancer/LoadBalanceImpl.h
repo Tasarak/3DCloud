@@ -54,10 +54,10 @@ public:
                                    ::Cloud3D::Confirmation* response) override;
 
 private:
-    void UpdateServerList();
-    void RemoveInactiveServer();
-    std::string FindBestServer(ServerNode sNode);
-    std::string MinUsageServer(std::vector<ServerNode> possibleServers);
+    void updateServerList();
+    void removeInactiveServer();
+    std::string findBestServer(ServerNode sNode);
+    std::string minUsageServer(std::vector<ServerNode> possibleServers);
 
     std::vector<ServerNode> servers_;
     std::thread updater_;

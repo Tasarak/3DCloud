@@ -21,7 +21,7 @@ int CloudClient::init()
     ch_args.SetMaxReceiveMessageSize(-1);
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Getting address from LoadBalancer"));
 
-    std::string providerAddress = finder.GetServer(services_);
+    std::string providerAddress = finder.getServer(services_);
     if (providerAddress.empty())
     {
         LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("Requested provider doesn't exist."));
@@ -56,7 +56,7 @@ int CloudClient::initWithSSL()
     auto channelCreds = grpc::SslCredentials(grpc::SslCredentialsOptions(opts));
 
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Getting address from LoadBalancer"));
-    std::string providerAddress = finder.GetServer(services_);
+    std::string providerAddress = finder.getServer(services_);
     if (providerAddress.empty())
     {
         LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("Requested provider doesn't exist."));
@@ -150,9 +150,9 @@ CloudClient::CloudClient(std::string &configFile, std::vector<std::string> &serv
     }
 }
 
-int CloudClient::performModelsToModelsOperation(std::string serviceName,
-                                                std::vector<std::string> &outgoingModels,
-                                                std::vector<std::string> &incomingModels)
+int CloudClient::performOperation(std::string serviceName,
+                                  std::vector<std::string> &outgoingModels,
+                                  std::vector<std::string> &incomingModels)
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("CloudClient"));
     ClientContext ctx;
@@ -189,9 +189,9 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
     }
 }
 
-int CloudClient::performModelsToNumbersOperation(std::string serviceName,
-                                                 std::vector<std::string> &outgoingModels,
-                                                 std::vector<double> &incomingNumbers)
+int CloudClient::performOperation(std::string serviceName,
+                                  std::vector<std::string> &outgoingModels,
+                                  std::vector<double> &incomingNumbers)
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("CloudClient"));
     ClientContext ctx;
@@ -228,9 +228,9 @@ int CloudClient::performModelsToNumbersOperation(std::string serviceName,
     }
 }
 
-int CloudClient::performModelsToModelsOperation(std::string serviceName,
-                                                std::vector<CloudMesh> &outgoingModels,
-                                                std::vector<CloudMesh> &incomingModels)
+int CloudClient::performOperation(std::string serviceName,
+                                  std::vector<CloudMesh> &outgoingModels,
+                                  std::vector<CloudMesh> &incomingModels)
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("CloudClient"));
     ClientContext ctx;
@@ -271,9 +271,9 @@ int CloudClient::performModelsToModelsOperation(std::string serviceName,
     }
 }
 
-int CloudClient::performModelsToNumbersOperation(std::string serviceName,
-                                                 std::vector<CloudClient::CloudMesh> &outgoingModels,
-                                                 std::vector<double> &incomingNumbers)
+int CloudClient::performOperation(std::string serviceName,
+                                  std::vector<CloudClient::CloudMesh> &outgoingModels,
+                                  std::vector<double> &incomingNumbers)
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("CloudClient"));
     ClientContext ctx;

@@ -29,13 +29,13 @@ class BalancerEstablisher
 public:
     explicit BalancerEstablisher(std::string &srvAddress, std::shared_ptr<grpc::Channel> channel,
                                  float &version, int &heartBeatRate);
-    void SendHeartBeat();
-    int EstablishServer();
+    void sendHeartBeat();
+    int establishServer();
     void setUsageFunction(void (*fp_)(int &));
 
 private:
-    void SendBeat();
-    void CountUsage();
+    void sendBeat();
+    void countUsage();
 
     std::unique_ptr<Cloud3D::LoadBalance::Stub> stub_;
     std::string srvAddress_;

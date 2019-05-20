@@ -28,7 +28,7 @@ class ServiceProviderImpl final : public Cloud3D::ServiceProvide::Service
 public:
 
 
-    static ServiceProviderImpl& GetInstance();
+    static ServiceProviderImpl& getInstance();
     ServiceProviderImpl(ServiceProviderImpl const&) = delete;
     void operator=(ServiceProviderImpl const&) = delete;
 
