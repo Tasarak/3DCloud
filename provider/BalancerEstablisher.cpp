@@ -24,6 +24,10 @@ BalancerEstablisher::BalancerEstablisher(std::string &srvAddress, std::shared_pt
                                         heartBeatRate_(heartBeatRate)
 {}
 
+/***
+ * Connect to Load Balancer and send all operation which it provides
+ * @return 0 if successful
+ */
 int BalancerEstablisher::establishServer()
 {
     NewServer server;
@@ -51,6 +55,9 @@ int BalancerEstablisher::establishServer()
     }
 }
 
+/***
+ * Send Heart Beat with period
+ */
 void BalancerEstablisher::sendHeartBeat()
 {
     while (true)
@@ -61,6 +68,9 @@ void BalancerEstablisher::sendHeartBeat()
     }
 }
 
+/***
+ * Send Heart Beat. If it's not possible, try to connect to Load Balancer again
+ */
 void BalancerEstablisher::sendBeat()
 {
     HeartBeat beat;
@@ -81,6 +91,9 @@ void BalancerEstablisher::sendBeat()
     }
 }
 
+/***
+ * Call user defined function for computing usage
+ */
 void BalancerEstablisher::countUsage()
 {
     if (isUsageSet)

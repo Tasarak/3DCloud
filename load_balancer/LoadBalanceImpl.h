@@ -41,6 +41,7 @@ public:
     LoadBalanceImpl(int &heartBeatRate);
     ~LoadBalanceImpl() override;
 
+    //Implementing Protocol Service calls
     ::grpc::Status ListServer(::grpc::ServerContext* context,
                               const ::Cloud3D::ServerRequest* request,
                               ::Cloud3D::ServerReply* response) override;

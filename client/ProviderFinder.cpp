@@ -13,15 +13,20 @@ using Cloud3D::ServerReply;
 using grpc::Channel;
 using grpc::ClientContext;
 
-ProviderFinder::ProviderFinder(std::string &balancerAddress, float &version) : version_(version)
+/***
+ * Connec to Load Balancer and get Provide address.
+ * Based on channel, it's done with authentication or not
+ * @param operations
+ * @param channel
+ * @return address of Provide if successful
+ */
+std::string ProviderFinder::getServer(std::vector<std::string> operations,
+                                      std::shared_ptr<::grpc::Channel> channel)
 {
-    stub_ = Cloud3D::LoadBalance::NewStub(grpc::CreateChannel(balancerAddress, grpc::InsecureChannelCredentials()));
-}
 
-std::string ProviderFinder::getServer(std::vector<std::string> operations)
-{
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ProviderFinder"));
 
+    stub_ = Cloud3D::LoadBalance::NewStub(channel);
     ServerRequest request;
     ServerReply response;
     grpc::ClientContext ctx;

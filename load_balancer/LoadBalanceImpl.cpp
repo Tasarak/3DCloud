@@ -20,6 +20,10 @@ using Cloud3D::HeartBeat;
 using Cloud3D::NewServer;
 using Cloud3D::Confirmation;
 
+/***
+ * Constructor create owns thread for looking after Providers
+ * @param heartBeatRate
+ */
 LoadBalanceImpl::LoadBalanceImpl(int &heartBeatRate) : heartBeatRate_(heartBeatRate)
 {
     updater_ = std::thread(&LoadBalanceImpl::updateServerList, this);
@@ -29,7 +33,13 @@ LoadBalanceImpl::~LoadBalanceImpl()
 {
     updater_.join();
 }
-
+/***
+ * Return address of Provider to Client
+ * @param context
+ * @param request
+ * @param response
+ * @return Status
+ */
 Status LoadBalanceImpl::ListServer(::grpc::ServerContext* context,
                                    const ::Cloud3D::ServerRequest* request,
                                    ::Cloud3D::ServerReply* response)
@@ -47,6 +57,13 @@ Status LoadBalanceImpl::ListServer(::grpc::ServerContext* context,
     return Status::OK;
 }
 
+/***
+ * Update info about Providers
+ * @param context
+ * @param request
+ * @param reply
+ * @return Status
+ */
 Status LoadBalanceImpl::SendHeartbeat(ServerContext *context,
                                       const HeartBeat *request,
                                       HeartBeatReply *reply)
@@ -69,6 +86,13 @@ Status LoadBalanceImpl::SendHeartbeat(ServerContext *context,
     return Status::CANCELLED;
 }
 
+/***
+ * Establish new Service Provider
+ * @param context
+ * @param request
+ * @param response
+ * @return Status
+ */
 Status LoadBalanceImpl::EstablishServer(::grpc::ServerContext* context,
                                         const ::Cloud3D::NewServer* request,
                                         ::Cloud3D::Confirmation* response)
@@ -96,6 +120,9 @@ Status LoadBalanceImpl::EstablishServer(::grpc::ServerContext* context,
     return Status::OK;
 }
 
+/***
+ * Handle Provider list and remove inactive providers with period
+ */
 void LoadBalanceImpl::updateServerList()
 {
     while (true)
@@ -114,6 +141,11 @@ void LoadBalanceImpl::removeInactiveServer()
     }), servers_.end());
 }
 
+/***
+ * Find the best possiblle Provider and return his address
+ * @param sNode
+ * @return The best possiblle Provider address
+ */
 std::string LoadBalanceImpl::findBestServer(ServerNode sNode)
 {
     std::vector<ServerNode> possibleServers;
@@ -143,6 +175,12 @@ std::string LoadBalanceImpl::findBestServer(ServerNode sNode)
     return minUsageServer(possibleServers);
 }
 
+/***
+ * Find server with the lowest usage and return his address.
+ * If more Providers have same usage, pick it randomlly.
+ * @param possibleServers
+ * @return Server with minimal usage
+ */
 std::string LoadBalanceImpl::minUsageServer(std::vector<ServerNode> possibleServers)
 {
     if (possibleServers.empty())

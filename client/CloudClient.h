@@ -37,6 +37,8 @@ public:
 
     CloudClient(std::string &configFile, std::vector<std::string> &services);
     ~CloudClient() = default;
+
+    //Main methods for connectin to Service Provider
     int performOperation(std::string serviceName,
                          std::vector<std::string> &outgoingModels,
                          std::vector<std::string> &incomingModels);
@@ -52,6 +54,8 @@ public:
     int performOperation(std::string serviceName,
                          std::vector<CloudMesh> &outgoingModels,
                          std::vector<double> &incomingNumbers);
+
+    //Methods for loading/storing from/to file
     static void loadMeshFromFile(std::string file, CloudMesh &loadedMesh);
     static void saveMeshToFile(std::string file, CloudMesh &loadedMesh);
 

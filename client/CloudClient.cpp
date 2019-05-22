@@ -12,16 +12,22 @@ using Cloud3D::OpenMeshModel;
 using grpc::Status;
 using grpc::ClientContext;
 
+/***
+ * Connect to Load Balancer and get address of Service Provider
+ *
+ * @return 0 if successful
+ */
 int CloudClient::init()
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("CloudClient"));
-    ProviderFinder finder(balancerAddress_, minVersion_);
+    ProviderFinder finder(minVersion_);
 
     grpc::ChannelArguments ch_args;
     ch_args.SetMaxReceiveMessageSize(-1);
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Getting address from LoadBalancer"));
 
-    std::string providerAddress = finder.getServer(services_);
+    auto balancerChannel = grpc::CreateChannel(balancerAddress_, grpc::InsecureChannelCredentials());
+    std::string providerAddress = finder.getServer(services_, balancerChannel);
     if (providerAddress.empty())
     {
         LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("Requested provider doesn't exist."));
@@ -29,15 +35,20 @@ int CloudClient::init()
     }
 
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Address of Service Provider") << providerAddress);
-    auto channel = grpc::CreateCustomChannel(providerAddress, grpc::InsecureChannelCredentials(), ch_args);
-    stub_ = Cloud3D::ServiceProvide::NewStub(channel);
+    auto providerChannel = grpc::CreateCustomChannel(providerAddress, grpc::InsecureChannelCredentials(), ch_args);
+    stub_ = Cloud3D::ServiceProvide::NewStub(providerChannel);
     return 0;
 }
 
+/***
+ * Connect to Load Balancer and get address of Service Provider using SSL
+ *
+ * @return 0 if successful
+ */
 int CloudClient::initWithSSL()
 {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("CloudClient"));
-    ProviderFinder finder(balancerAddress_, minVersion_);
+    ProviderFinder finder(minVersion_);
 
     std::string cert;
     std::string key;
@@ -55,8 +66,10 @@ int CloudClient::initWithSSL()
     chArgs.SetMaxReceiveMessageSize(-1);
     auto channelCreds = grpc::SslCredentials(grpc::SslCredentialsOptions(opts));
 
+
+    auto balancerChannel = grpc::CreateChannel(balancerAddress_, channelCreds);
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Getting address from LoadBalancer"));
-    std::string providerAddress = finder.getServer(services_);
+    std::string providerAddress = finder.getServer(services_, balancerChannel);
     if (providerAddress.empty())
     {
         LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("Requested provider doesn't exist."));
@@ -65,9 +78,9 @@ int CloudClient::initWithSSL()
 
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Address of Service Provider") << providerAddress);
 
-    auto channel = grpc::CreateCustomChannel(providerAddress, channelCreds, chArgs);
+    auto providerChannel = grpc::CreateCustomChannel(providerAddress, channelCreds, chArgs);
 
-    stub_ = Cloud3D::ServiceProvide::NewStub(channel);
+    stub_ = Cloud3D::ServiceProvide::NewStub(providerChannel);
     return 0;
 }
 
@@ -150,6 +163,13 @@ CloudClient::CloudClient(std::string &configFile, std::vector<std::string> &serv
     }
 }
 
+/***
+ * Connect to Service Provider and make it to compute operation
+ * @param serviceName
+ * @param outgoingModels
+ * @param incomingModels
+ * @return 0 if successful
+ */
 int CloudClient::performOperation(std::string serviceName,
                                   std::vector<std::string> &outgoingModels,
                                   std::vector<std::string> &incomingModels)
@@ -189,6 +209,13 @@ int CloudClient::performOperation(std::string serviceName,
     }
 }
 
+/***
+ * Connect to Service Provider and make it to compute operation
+ * @param serviceName
+ * @param outgoingModels
+ * @param incomingNumbers
+ * @return 0 if successful
+ */
 int CloudClient::performOperation(std::string serviceName,
                                   std::vector<std::string> &outgoingModels,
                                   std::vector<double> &incomingNumbers)
@@ -228,6 +255,13 @@ int CloudClient::performOperation(std::string serviceName,
     }
 }
 
+/***
+ * Connect to Service Provider and make it to compute operation
+ * @param serviceName
+ * @param outgoingModels
+ * @param incomingModels
+ * @return 0 if successful
+ */
 int CloudClient::performOperation(std::string serviceName,
                                   std::vector<CloudMesh> &outgoingModels,
                                   std::vector<CloudMesh> &incomingModels)
@@ -271,6 +305,13 @@ int CloudClient::performOperation(std::string serviceName,
     }
 }
 
+/***
+ * Connect to Service Provider and make it to compute operation
+ * @param serviceName
+ * @param outgoingModels
+ * @param incomingNumbers
+ * @return 0 if successful
+ */
 int CloudClient::performOperation(std::string serviceName,
                                   std::vector<CloudClient::CloudMesh> &outgoingModels,
                                   std::vector<double> &incomingNumbers)
@@ -309,6 +350,11 @@ int CloudClient::performOperation(std::string serviceName,
     }
 }
 
+/***
+ * Save Mesh to file in given path
+ * @param file
+ * @param loadedMesh
+ */
 void CloudClient::saveMeshToFile(std::string file, CloudClient::CloudMesh &loadedMesh)
 {
     ModelProcessor processor;
@@ -322,6 +368,11 @@ void CloudClient::saveMeshToFile(std::string file, CloudClient::CloudMesh &loade
     }
 }
 
+/**
+ * Load file in given path to Mesh
+ * @param file
+ * @param loadedMesh
+ */
 void CloudClient::loadMeshFromFile(std::string file, CloudClient::CloudMesh &loadedMesh)
 {
     ModelProcessor processor;

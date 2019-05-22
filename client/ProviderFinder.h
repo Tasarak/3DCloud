@@ -26,8 +26,8 @@
 class ProviderFinder
 {
 public:
-    ProviderFinder(std::string &balancerAddress, float &version);
-    std::string getServer(std::vector<std::string>);
+    ProviderFinder(float &version) : version_(version) {}
+    std::string getServer(std::vector<std::string>, std::shared_ptr<::grpc::Channel> channel);
 
 private:
     std::unique_ptr<Cloud3D::LoadBalance::Stub> stub_;

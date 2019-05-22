@@ -4,12 +4,23 @@
 
 #include "ServiceProviderImpl.h"
 
+/***
+ *
+ * @return Single instance of Singleton
+ */
 ServiceProviderImpl& ServiceProviderImpl::getInstance()
 {
     static ServiceProviderImpl instance;
     return instance;
 }
 
+/**
+ * Handle incominc RPC requesting ModelToModel service
+ * @param context
+ * @param request
+ * @param response
+ * @return Status
+ */
 ::grpc::Status ServiceProviderImpl::ModelstoModels(::grpc::ServerContext *context,
                                                    const ::Cloud3D::Model *request,
                                                    ::Cloud3D::Model *response)
@@ -36,6 +47,13 @@ ServiceProviderImpl& ServiceProviderImpl::getInstance()
     return ::grpc::Status::CANCELLED;
 }
 
+/***
+ * Handle incominc RPC requesting ModelToNumbers service
+ * @param context
+ * @param request
+ * @param response
+ * @return Status
+ */
 ::grpc::Status ServiceProviderImpl::ModelstoNumbers(::grpc::ServerContext *context,
                                                     const ::Cloud3D::Model *request,
                                                     ::Cloud3D::VectorofNumbers *response)
@@ -63,6 +81,13 @@ ServiceProviderImpl& ServiceProviderImpl::getInstance()
     return  ::grpc::Status::CANCELLED;
 }
 
+/***
+ * Handle incominc RPC requesting MeshToMesh service
+ * @param context
+ * @param request
+ * @param response
+ * @return Status
+ */
 ::grpc::Status ServiceProviderImpl::MeshtoMesh(::grpc::ServerContext *context,
                                                const ::Cloud3D::OpenMeshModel *request,
                                                ::Cloud3D::OpenMeshModel *response)
@@ -94,6 +119,13 @@ ServiceProviderImpl& ServiceProviderImpl::getInstance()
     return ::grpc::Status::CANCELLED;
 }
 
+/***
+ * Handle incominc RPC requesting MeshToNumbers service
+ * @param context
+ * @param request
+ * @param response
+ * @return Status
+ */
 ::grpc::Status ServiceProviderImpl::MeshtoNumbers(::grpc::ServerContext *context,
                                                   const ::Cloud3D::OpenMeshModel *request,
                                                   ::Cloud3D::VectorofNumbers *response)

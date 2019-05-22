@@ -97,6 +97,9 @@ LoadBalancer::LoadBalancer(std::string &configFile)
     }
 }
 
+/***
+ * Main loop for Load Balancer
+ */
 void LoadBalancer::run()
 {
     if (!certFilename_.empty() && !keyFilename_.empty() && !rootFilename_.empty())

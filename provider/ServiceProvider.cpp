@@ -20,6 +20,9 @@ void ServiceProvider::initServiceProviderImpl()
     serviceProviderImpl_ = &ServiceProviderImpl::getInstance();
 }
 
+/***
+ * Create insecure connection
+ */
 void ServiceProvider::init()
 {
     balancer_ = new BalancerEstablisher(providerAddress_, grpc::CreateChannel(balancerAddress_,
@@ -29,6 +32,9 @@ void ServiceProvider::init()
     serverBuilder_.AddListeningPort(providerAddress_, grpc::InsecureServerCredentials());
 }
 
+/***
+ * Create secure connection using SSL
+ */
 void ServiceProvider::initWithSSL()
 {
     FileParser parser;
@@ -126,16 +132,13 @@ void ServiceProvider::startServer()
     server_->Wait();
 }
 
+/***
+ * Main loop of Service Provider.
+ * Spawn two threads. First for connecting to Load Balancer. Second to handle incoming RPCs.
+ * @return 0
+ */
 int ServiceProvider::run()
 {
-    if (isUsingAuthentication_)
-    {
-        //initWithSSL();
-    }
-    else
-    {
-        //init();
-    }
     serverBuilder_.RegisterService(serviceProviderImpl_);
     serverBuilder_.SetMaxReceiveMessageSize(-1);
 

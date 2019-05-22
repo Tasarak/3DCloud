@@ -10,6 +10,9 @@
 
 #include "Shared/ModelProcessor.h"
 
+/***
+ * Parent class for all services
+ */
 class Service
 {
 public:
@@ -32,6 +35,9 @@ protected:
     std::vector<ModelProcessor::CloudMesh> incomingMeshModels_;
 };
 
+/**
+ * Class to handle ModelToModel Services
+ */
 class ModelToModelService : public Service
 {
 public:
@@ -49,6 +55,9 @@ private:
 
 };
 
+/**
+ * Class to handle ModelToNumber Services
+ */
 class ModelToNumberService : public Service
 {
 public:
