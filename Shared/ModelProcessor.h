@@ -19,6 +19,8 @@
 #include <grpcpp/grpcpp.h>
 #include <grpc/support/log.h>
 
+#define MAX_STREAM_VALUE 4*1024
+
 
 class ModelProcessor
 {
@@ -30,6 +32,7 @@ public:
     void deserializeModel(CloudMesh &mesh, Cloud3D::Mesh &model);
     void saveModel(ModelProcessor::CloudMesh &mesh, std::string &outputFile);
     void loadModel(ModelProcessor::CloudMesh &mesh, std::string &inputFile);
+    void splitString(std::string str, std::vector<std::string>& out);
 };
 
 

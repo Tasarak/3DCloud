@@ -237,6 +237,7 @@ int CloudClient::performOperation(std::string serviceName,
     OpenMeshModel outModel;
     OpenMeshModel incModel;
     ModelProcessor modelProcessor;
+    Status status;
 
     outModel.set_operation(serviceName);
 
@@ -247,12 +248,24 @@ int CloudClient::performOperation(std::string serviceName,
     }
     LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of serialization of models"));
 
-    LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of communication with Provider"));
-    Status status = stub_->MeshtoMesh(&ctx, outModel, &incModel);
+    if (outModel.ByteSizeLong() > GRPC_DEFAULT_MAX_RECV_MESSAGE_LENGTH)
+    {
+        std::string stringModelOut, stringModelInc;
+        outModel.SerializeToString(&stringModelOut);
+        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of communication with Provider"));
+        status = streamData(stringModelOut, stringModelInc, Cloud3D::OperationType::MESHMESH);
+        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of communication with Provider"));
+        incModel.ParseFromString(stringModelInc);
+    }
+    else
+    {
+        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of communication with Provider"));
+        status = stub_->MeshtoMesh(&ctx, outModel, &incModel);
+        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of communication with Provider"));
+    }
 
     if (status.ok())
     {
-        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of communication with Provider"));
         LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of deserialization of models"));
         for (auto model : incModel.mesh())
         {
@@ -333,4 +346,33 @@ void CloudClient::loadMeshFromFile(std::string file, CloudClient::CloudMesh &loa
     {
         throw;
     }
+}
+
+::grpc::Status CloudClient::streamData(std::string &model, std::string &outModel, Cloud3D::OperationType type)
+{
+    ClientContext ctx;
+    std::vector<std::string> output;
+    ModelProcessor processor;
+    std::shared_ptr<grpc::ClientReaderWriter<Cloud3D::StreamModel, Cloud3D::StreamModel> > stream(stub_->StreamToStream(&ctx));
+
+    processor.splitString(model, output);
+
+    for (auto data : output)
+    {
+        Cloud3D::StreamModel streamModel;
+        streamModel.set_type(type);
+        streamModel.set_data(data);
+        if (!stream->Write(streamModel))
+            break;
+    }
+    stream->WritesDone();
+
+    Cloud3D::StreamModel modelInc;
+    while (stream->Read(&modelInc))
+    {
+        outModel += modelInc.data();
+    }
+    Status status = stream->Finish();
+
+    return status;
 }

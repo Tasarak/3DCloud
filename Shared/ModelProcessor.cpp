@@ -50,16 +50,19 @@ void ModelProcessor::serializeModel(Cloud3D::OpenMeshModel &model, ModelProcesso
         vertex->set_y(point[1]);
         vertex->set_z(point[2]);
     }
+    long long i = 0;
 
     for (CloudMesh::FaceIter f_it=mesh.faces_begin(); f_it!=mesh.faces_end(); ++f_it)
     {
         Cloud3D::Face* face = meshModel->add_face();
+        i++;
 
         for (CloudMesh::FaceVertexIter fv_it=mesh.fv_iter(*f_it); fv_it.is_valid(); ++fv_it)
         {
             face->add_index(u_int32_t (fv_it->idx()));
         }
     }
+    std::cout << i;
 }
 
 void ModelProcessor::deserializeModel(ModelProcessor::CloudMesh &mesh,
@@ -82,5 +85,15 @@ void ModelProcessor::deserializeModel(ModelProcessor::CloudMesh &mesh,
             vhandle.push_back(mesh.add_vertex(vertex));
         }
         mesh.add_face(vhandle);
+    }
+}
+
+void ModelProcessor::splitString(const std::string str, std::vector<std::string> &out)
+{
+    out.clear();
+    out.reserve(str.length() / MAX_STREAM_VALUE + str.length() % 1);
+    for (size_t i = 0; i < str.length(); i += MAX_STREAM_VALUE)
+    {
+        out.push_back(std::string(str, i, MAX_STREAM_VALUE));
     }
 }

@@ -124,3 +124,66 @@ ServiceProviderImpl& ServiceProviderImpl::getInstance()
     }
     return ::grpc::Status::CANCELLED;
 }
+
+::grpc::Status ServiceProviderImpl::StreamToStream(::grpc::ServerContext *context,
+                                                   ::grpc::ServerReaderWriter<::Cloud3D::StreamModel,
+                                                           ::Cloud3D::StreamModel> *stream)
+{
+    std::string buffer;
+    unsigned i = 0;
+    Cloud3D::StreamModel modelInc;
+    Cloud3D::OperationType type;
+    while (stream->Read(&modelInc))
+    {
+        buffer += modelInc.data();
+        type = modelInc.type();
+    }
+
+    if (type == Cloud3D::OperationType::MODELMODEL)
+    {
+
+    }
+    else if (type == Cloud3D::OperationType::MODELNUMBERS)
+    {
+
+    }
+    else if (type == Cloud3D::OperationType::MESHMESH)
+    {
+
+    }
+    else if (type == Cloud3D::OperationType::MESHNUMBERS)
+    {
+
+    }
+
+    return ::grpc::Status::OK;
+}
+
+void ServiceProviderImpl::doMeshToMesh(Cloud3D::OpenMeshModel &request, Cloud3D::OpenMeshModel &response)
+{
+    log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("ServiceProvider"));
+    ModelProcessor modelManager;
+    ModelProcessor::CloudMesh mesh;
+
+    for (auto service : ModelsToModelsServices)
+    {
+        if (request->operation() == service.name_)
+        {
+            for (auto model : request->mesh())
+            {
+                mesh.clear();
+                modelManager.deserializeModel(mesh, model);
+                service.incomingMeshModels_.push_back(mesh);
+            }
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("Start of execution of Service: ") << service.getName());
+            service.fp_(&service);
+            LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("End of execution of Service: ") << service.getName());
+            for (auto meshOut : service.outgoingMeshModels_)
+            {
+                modelManager.serializeModel(*response, meshOut);
+            }
+            return ::grpc::Status::OK;
+        }
+    }
+    return ::grpc::Status::CANCELLED;
+}

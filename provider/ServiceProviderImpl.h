@@ -23,6 +23,9 @@
 
 #include "Service.h"
 
+#define MAX_STREAM_VALUE 4 * 1024
+
+
 class ServiceProviderImpl final : public Cloud3D::ServiceProvide::Service
 {
 public:
@@ -51,6 +54,11 @@ private:
     ::grpc::Status MeshtoNumbers(::grpc::ServerContext* context,
                                  const ::Cloud3D::OpenMeshModel* request,
                                  ::Cloud3D::VectorofNumbers* response) override;
+    ::grpc::Status StreamToStream(::grpc::ServerContext *context,
+                                  ::grpc::ServerReaderWriter<::Cloud3D::StreamModel,
+                                          ::Cloud3D::StreamModel> *stream) override;
+    void doModelToModel(Cloud3D::Model&, Cloud3D::Model&);
+    ::grpc::Status doMeshToMesh(Cloud3D::OpenMeshModel&, Cloud3D::OpenMeshModel&);
 };
 
 

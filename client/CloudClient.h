@@ -21,6 +21,8 @@
 #include "Shared/ModelProcessor.h"
 #include "Shared/FileParser.h"
 
+#define MAX_STREAM_VALUE 4 * 1024
+
 class CloudClient
 {
 public:
@@ -58,6 +60,7 @@ public:
 private:
     int initWithSSL();
     int init();
+    ::grpc::Status streamData(std::string &model, std::string &outModel, Cloud3D::OperationType type);
 
     std::unique_ptr<Cloud3D::ServiceProvide::Stub> stub_;
     std::vector<std::string> services_;

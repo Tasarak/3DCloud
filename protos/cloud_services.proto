@@ -8,6 +8,7 @@ service ServiceProvide
     rpc ModelstoNumbers (Model) returns (VectorofNumbers) {}
     rpc MeshtoMesh (OpenMeshModel) returns (OpenMeshModel) {}
     rpc MeshtoNumbers (OpenMeshModel) returns (VectorofNumbers) {}
+    rpc StreamToStream (stream StreamModel) returns (stream StreamModel) {}
 }
 
 service LoadBalance
@@ -87,4 +88,18 @@ message OpenMeshModel
 {
     string operation = 1;
     repeated Mesh mesh = 2;
+}
+
+message StreamModel
+{
+    bytes data = 1;
+    OperationType type = 2;
+
+}
+
+enum OperationType {
+    MODELMODEL = 0;
+    MODELNUMBERS = 1;
+    MESHMESH = 2;
+    MESHNUMBERS = 3;
 }
